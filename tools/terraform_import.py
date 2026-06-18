@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 """
 Terraform state import tool for infrastructure resource management.
 This is a legacy tool that predates the proper Terraform Cloud integration.

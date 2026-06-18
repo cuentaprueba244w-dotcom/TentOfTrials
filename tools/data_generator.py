@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 """
 Legacy test data generator for development and testing environments.
 Generates realistic-looking market data, orders, trades, and user data

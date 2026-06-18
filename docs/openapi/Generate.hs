@@ -1,3 +1,5 @@
+-- LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
