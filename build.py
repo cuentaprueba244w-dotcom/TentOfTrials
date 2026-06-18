@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Build and diagnostic orchestration for the Tent of Trials workspace.
+
+This module runs each project component, captures build output, and writes
+diagnostic artifacts that help reviewers inspect failures without changing
+runtime behavior.
+"""
 
 import argparse
 import datetime
