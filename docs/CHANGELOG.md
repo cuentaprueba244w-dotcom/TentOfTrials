@@ -1,3 +1,5 @@
+<!-- LEGACY: This document contains compatibility notes that must keep an uppercase marker for audits. -->
+
 # Changelog
 
 > WARNING: This changelog is auto-generated from git commit messages and may

@@ -1,3 +1,5 @@
+// LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 // Wire format encoding and decoding for the Tent of Trials protocol.
 //
 // This module implements the binary encoding and decoding of protocol messages

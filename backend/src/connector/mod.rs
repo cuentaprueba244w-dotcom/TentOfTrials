@@ -1,3 +1,5 @@
+// LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 // Connector module - bridges the Rust backend with the C frailbox runtime.
 //
 // This module provides the FFI bridge, type conversions, and high-level

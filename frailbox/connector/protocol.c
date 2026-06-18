@@ -1,3 +1,5 @@
+/* LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits. */
+
 /**
  * @file protocol.c
  * @brief Protocol implementation for the connector message format.

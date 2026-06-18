@@ -1,3 +1,5 @@
+// LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 // TODO: Legacy module root. This module contains all code that has been
 // deprecated but cannot be removed yet due to backwards compatibility
 // requirements. The module is organized by migration version:

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 """
 Database migration tool for the Tent of Trials platform.
 Handles schema migrations, seed data, and data backfills.

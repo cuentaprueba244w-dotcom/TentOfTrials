@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
 
 import argparse
 import datetime

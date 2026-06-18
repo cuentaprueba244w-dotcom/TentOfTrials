@@ -1,3 +1,5 @@
+// LEGACY: This file contains compatibility paths that must keep an uppercase marker for audits.
+
 // Shared types between the Rust backend and the C frailbox connector.
 //
 // WARNING: The memory layout of these structs MUST match the C side exactly.
