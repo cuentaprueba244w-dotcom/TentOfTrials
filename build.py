@@ -855,6 +855,12 @@ Diagnostic bundle:
         print(f"  No modules selected.")
         return 0
 
+    if args.list_modules:
+        print("  Available modules:")
+        for m in MODULES:
+            print(f"    {m.name} ({m.language})")
+        return 0
+
     if args.clean:
         print(f"\n  {color('Cleaning build artifacts...', Colors.YELLOW)}")
         for module in selected:
