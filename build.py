@@ -12,7 +12,7 @@ import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
 ROOT = Path(__file__).resolve().parent
 DIAGNOSTIC_DIR = ROOT / "diagnostic"
@@ -163,6 +163,60 @@ MODULES = [
         build_dir=None,
     ),
 ]
+
+
+def module_names(modules: Sequence[Module] = MODULES) -> list[str]:
+    """Return known module names in display order."""
+    return [module.name for module in modules]
+
+
+def format_available_modules(modules: Sequence[Module] = MODULES) -> str:
+    """Return a concise module-name list for CLI error messages."""
+    return ", ".join(module_names(modules))
+
+
+def module_detail_lines(modules: Sequence[Module] = MODULES) -> list[str]:
+    """Return human-readable module details for --list-modules output."""
+    lines: list[str] = []
+    for module in modules:
+        lines.append(f"{module.name} ({module.language})")
+        lines.append(f"  dir: {module.dir.relative_to(ROOT)}")
+        lines.append(f"  build: {' '.join(module.build_cmd)}")
+    return lines
+
+
+def parse_module_names(raw_selection: str) -> list[str]:
+    """Parse a comma-separated module selection, preserving request order."""
+    return [name.strip() for name in raw_selection.split(",")]
+
+
+def select_modules(
+    raw_selection: str,
+    modules: Sequence[Module] = MODULES,
+) -> tuple[list[Module], list[str]]:
+    """Return selected modules and invalid names for a CLI module selection."""
+    raw_selection = raw_selection.strip()
+    if raw_selection.lower() == "all":
+        return list(modules), []
+
+    requested_names = parse_module_names(raw_selection)
+    module_by_name = {module.name: module for module in modules}
+    invalid_names = [
+        name if name else "<empty>"
+        for name in requested_names
+        if not name or name not in module_by_name
+    ]
+    if invalid_names:
+        return [], invalid_names
+
+    selected: list[Module] = []
+    seen: set[str] = set()
+    for name in requested_names:
+        if name in seen:
+            continue
+        selected.append(module_by_name[name])
+        seen.add(name)
+    return selected, []
 
 ENCRYPTLY_DIR = ROOT / "tools" / "encryptly"
 ENCRYPTLY_BINARIES = {
@@ -785,6 +839,7 @@ Examples:
   python3 build.py                    Build all modules
   python3 build.py -m backend         Build only backend
   python3 build.py -m frontend,market Build frontend and market
+  python3 build.py --list-modules     List available modules
   python3 build.py --clean            Clean all artifacts
   python3 build.py --release          Release build (Rust only)
   python3 build.py --verbose          Verbose output
@@ -811,7 +866,9 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
-        "--list", action="store_true",
+        "--list-modules", "--list",
+        dest="list_modules",
+        action="store_true",
         help="List available modules and exit",
     )
 
@@ -821,13 +878,24 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list_modules:
         print(f"  {color('Available modules:', Colors.BOLD)}")
-        for m in MODULES:
-            print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
-            print(f"      dir: {m.dir.relative_to(ROOT)}")
-            print(f"      build: {' '.join(m.build_cmd)}")
+        for line in module_detail_lines():
+            if line.startswith("  "):
+                print(f"    {line}")
+            else:
+                name, _, suffix = line.partition(" ")
+                print(f"    {color(name, Colors.CYAN)} {suffix}")
         return 0
+
+    selected, invalid_names = select_modules(args.module)
+    if invalid_names:
+        print(
+            f"  {color('Invalid module selection:', Colors.RED)} "
+            f"{', '.join(invalid_names)}"
+        )
+        print(f"    Available: {format_available_modules()}")
+        return 1
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
     missing = check_prerequisites()
@@ -840,17 +908,6 @@ Diagnostic bundle:
         print(f"  {color(msg, Colors.GRAY)}")
     else:
         print(f"  {color('✓ All prerequisites found', Colors.GREEN)}")
-    if args.module == "all":
-        selected = MODULES
-    else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
-            return 1
-
     if not selected:
         print(f"  No modules selected.")
         return 0
