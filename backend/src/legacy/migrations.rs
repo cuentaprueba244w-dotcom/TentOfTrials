@@ -328,3 +328,4 @@ pub fn intercept_migration(id: u64, sql: &str) -> Option<String> {
         _ => None,
     }
 }
+LEGACY: backend/src/legacy/migrations.rs
