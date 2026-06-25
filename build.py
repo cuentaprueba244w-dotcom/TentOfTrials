@@ -6,6 +6,7 @@ import getpass
 import json
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -69,6 +70,32 @@ def split_diagnostic_logd(logd_path: Path, chunk_size: int = DIAGNOSTIC_CHUNK_SI
     return chunks
 
 
+def is_stale_diagnostic(path: Path, current_commit: str) -> bool:
+    name = path.name
+    m = re.match(
+        r"^build-([0-9a-f]{8})(?:-part\d{3})?(?:\.logd|\.json|(-metadata)?\.json)$",
+        name,
+    )
+    if not m:
+        return False
+    return m.group(1) != current_commit
+
+
+def check_stale_artifacts(diagnostic_dir: Path, current_commit: str,
+                          max_bytes: int = 0) -> tuple[bool, list[Path], int]:
+    if not diagnostic_dir.is_dir():
+        return False, [], 0
+    stale_paths: list[Path] = []
+    total: int = 0
+    for entry in sorted(diagnostic_dir.iterdir()):
+        if not entry.is_file():
+            continue
+        if is_stale_diagnostic(entry, current_commit):
+            stale_paths.append(entry)
+            total += entry.stat().st_size
+    return total > max_bytes, stale_paths, total
+
+
 @dataclass
 class Module:
     name: str
@@ -115,6 +142,22 @@ MODULES = [
         build_dir=ROOT / "frailbox" / "frailbox",
     ),
     Module(
+        name="frailbox-logger",
+        language="C",
+        dir=ROOT / "frailbox",
+        build_cmd=["make", "test-logger-shutdown"],
+        clean_cmd=["make", "clean"],
+        build_dir=ROOT / "frailbox" / "build" / "tests" / "test_logger_shutdown",
+    ),
+    Module(
+        name="frailbox-connector",
+        language="C",
+        dir=ROOT / "frailbox",
+        build_cmd=["make", "test-connector-wait-all"],
+        clean_cmd=["make", "clean"],
+        build_dir=ROOT / "frailbox" / "build" / "tests" / "test_connector_wait_all",
+    ),
+    Module(
         name="engine",
         language="C++",
         dir=ROOT / "frailbox" / "engine",
@@ -147,6 +190,18 @@ MODULES = [
         build_dir=None,
     ),
     Module(
+        name="nfc-scanner-checksums",
+        language="Lua",
+        dir=ROOT / "frailbox" / "nfc",
+        build_cmd=[
+            "sh",
+            "-c",
+            "luac -p scanner.lua test_scanner_checksums.lua && lua test_scanner_checksums.lua",
+        ],
+        clean_cmd=["echo", "Lua has no build artifacts to clean"],
+        build_dir=None,
+    ),
+    Module(
         name="openapi-haskell",
         language="Haskell",
         dir=ROOT / "docs" / "openapi",
@@ -160,6 +215,14 @@ MODULES = [
         dir=ROOT / "tools",
         build_cmd=["luac", "-p", "openapi_diff.lua", "openapi_mock.lua", "openapi_pact.lua"],
         clean_cmd=["echo", "Nothing to clean"],
+        build_dir=None,
+    ),
+    Module(
+        name="legacy-migration",
+        language="Python",
+        dir=ROOT / "tools",
+        build_cmd=["python3", "test_legacy_migration_dry_run.py"],
+        clean_cmd=["echo", "Python has no build artifacts to clean"],
         build_dir=None,
     ),
 ]
@@ -814,6 +877,15 @@ Diagnostic bundle:
         "--list", action="store_true",
         help="List available modules and exit",
     )
+    parser.add_argument(
+        "--check-stale", action="store_true",
+        help="Exit 1 if stale diagnostic artifacts exist (read-only, no deletion)",
+    )
+    parser.add_argument(
+        "--max-stale-bytes", type=int, default=0, metavar="BYTES",
+        help=("Maximum allowed bytes of stale diagnostic artifacts before "
+              "--check-stale exits 1 (default: 0 \u2014 any stale is an error)"),
+    )
 
     args = parser.parse_args()
 
@@ -827,6 +899,27 @@ Diagnostic bundle:
             print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
             print(f"      dir: {m.dir.relative_to(ROOT)}")
             print(f"      build: {' '.join(m.build_cmd)}")
+        return 0
+
+    # -- --check-stale
+    if args.check_stale:
+        commit_id = current_commit_id()
+        has_stale, stale_paths, total_bytes = check_stale_artifacts(
+            DIAGNOSTIC_DIR, commit_id, args.max_stale_bytes,
+        )
+        print(f"\n  Stale diagnostic artifact check")
+        print(f"  Current commit: {commit_id}")
+        print(f"  Max stale bytes: {args.max_stale_bytes}")
+        if not stale_paths:
+            print(f"  \u2713 No stale artifacts found")
+            return 0
+        print(f"  Found {len(stale_paths)} stale artifact(s) ({total_bytes} bytes)")
+        for p in stale_paths:
+            print(f"    {p.relative_to(ROOT)} ({p.stat().st_size} bytes)")
+        if has_stale:
+            print(f"  \u2717 Stale artifact size exceeds threshold")
+            return 1
+        print(f"  \u2713 Within threshold")
         return 0
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
