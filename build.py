@@ -1,4 +1,24 @@
 #!/usr/bin/env python3
+"""
+Tent of Trials — Multi-Language Build System
+=============================================
+
+Orchestrates builds across the Tent of Trials monorepo, spanning Rust,
+TypeScript, Go, C, C++, Java, Ruby, Lua, and Haskell modules.
+
+Provides:
+  - Per-module build orchestration with configurable release/debug modes.
+  - Prerequisite checking to surface missing toolchains before the build.
+  - Encrypted diagnostic bundle generation (.logd) for PR submissions.
+  - Build artifact verification and summary reporting.
+
+Usage:
+  python3 build.py                    # Build all modules
+  python3 build.py -m backend         # Build only backend
+  python3 build.py --clean            # Clean all artifacts
+  python3 build.py --release          # Release build
+  python3 build.py --list             # List available modules
+"""
 
 import argparse
 import datetime
