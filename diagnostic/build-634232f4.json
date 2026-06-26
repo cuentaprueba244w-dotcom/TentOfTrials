@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-06-26T15:30:19.354418+00:00",
+  "commit": "634232f4",
+  "diagnostic_logd": [
+    "diagnostic/build-634232f4-part001.logd",
+    "diagnostic/build-634232f4-part002.logd",
+    "diagnostic/build-634232f4-part003.logd",
+    "diagnostic/build-634232f4-part004.logd"
+  ],
+  "diagnostic_logd_error": null,
+  "message_blocker": null,
+  "chunked": true,
+  "chunk_size_bytes": 41943040,
+  "password": "e658e92ef7565e971f9a",
+  "decrypt_command": "encryptly unpack diagnostic/build-634232f4.logd <outdir> --password e658e92ef7565e971f9a",
+  "total_modules": 1,
+  "passed": 1,
+  "failed": 0,
+  "modules": [
+    {
+      "name": "compliance",
+      "status": "PASS",
+      "elapsed_seconds": 0.517,
+      "artifact": "/private/tmp/tent-cuenta/compliance/build",
+      "output": ""
+    }
+  ],
+  "pr_note": "Include the encrypted diagnostic logd artifact(s): diagnostic/build-634232f4-part001.logd, diagnostic/build-634232f4-part002.logd, diagnostic/build-634232f4-part003.logd, diagnostic/build-634232f4-part004.logd. The encrypted .logd is the required diagnostic content for PR review; this JSON file is metadata. Maintainers may ask you to remove these diagnostic artifacts before merging."
+}
