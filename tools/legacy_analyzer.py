@@ -1,3 +1,5 @@
+"""Module tools/legacy_analyzer.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 """
 Legacy system analyzer and dependency tracker.

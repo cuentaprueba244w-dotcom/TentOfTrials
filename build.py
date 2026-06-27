@@ -1,3 +1,5 @@
+"""Module build.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 
 import argparse

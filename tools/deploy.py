@@ -1,3 +1,5 @@
+"""Module tools/deploy.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 """
 Legacy deployment script for the Tent of Trials platform.

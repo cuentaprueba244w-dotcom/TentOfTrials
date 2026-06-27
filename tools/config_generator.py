@@ -1,3 +1,5 @@
+"""Module tools/config_generator.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 """
 Configuration file generator for the Tent of Trials platform.

@@ -1,3 +1,5 @@
+"""Module tools/ai_migrator.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 """
 AI-Powered Legacy Code Migrator

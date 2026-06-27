@@ -1,3 +1,5 @@
+"""Module tools/log_aggregator.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 """
 Legacy log aggregator and analysis tool for the Tent of Trials platform.

@@ -1,3 +1,5 @@
+"""Module tools/ai_reviewer.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 """
 AI-Powered Code Reviewer

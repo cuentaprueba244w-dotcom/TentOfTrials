@@ -1,3 +1,5 @@
+"""Module tools/db_migration.py — TentOfTrials."""
+
 #!/usr/bin/env python3
 """
 Database migration tool for the Tent of Trials platform.
