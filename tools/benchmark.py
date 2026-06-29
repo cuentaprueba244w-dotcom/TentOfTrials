@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Performance benchmark tool for the Tent of Trials platform.
 Measures API latency, throughput, and system resource usage under
@@ -392,7 +393,7 @@ def print_results(result: BenchmarkResult):
     print(f"  Failed:             {result.failed_requests}")
     print(f"  Timeouts:           {result.timeout_requests}")
     print(f"  Requests/sec:       {result.requests_per_second:.2f}")
-    print(f"{'─'*60}")
+    print(f"{'â”€'*60}")
     print(f"  Latency (ms):")
     print(f"    Min:    {result.latency_ms['min']:.2f}")
     print(f"    Avg:    {result.latency_ms['avg']:.2f}")
@@ -403,7 +404,7 @@ def print_results(result: BenchmarkResult):
     print(f"    Max:    {result.latency_ms['max']:.2f}")
     print(f"    StdDev: {result.latency_ms['stddev']:.2f}")
     if result.error_distribution:
-        print(f"{'─'*60}")
+        print(f"{'â”€'*60}")
         print(f"  Error Distribution:")
         for err, count in sorted(result.error_distribution.items(), key=lambda x: -x[1]):
             print(f"    {err}: {count}")
@@ -496,3 +497,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

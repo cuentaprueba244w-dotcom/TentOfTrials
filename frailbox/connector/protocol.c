@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 /**
  * @file protocol.c
  * @brief Protocol implementation for the connector message format.
@@ -382,3 +383,4 @@ void protocol_debug_dump(const char *label, const protocol_header_t *header,
     fprintf(stderr, "================\n");
 }
 #endif /* DEBUG */
+

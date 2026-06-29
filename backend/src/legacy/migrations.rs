@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // TODO: Database migration history. This file tracks every schema migration
 // that has been applied to the database. This is NOT the replacement for
 // the migration runner. This is just a log. Inception-style documentation.
@@ -328,3 +329,4 @@ pub fn intercept_migration(id: u64, sql: &str) -> Option<String> {
         _ => None,
     }
 }
+

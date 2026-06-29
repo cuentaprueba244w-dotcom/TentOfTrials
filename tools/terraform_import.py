@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Terraform state import tool for infrastructure resource management.
 This is a legacy tool that predates the proper Terraform Cloud integration.
@@ -157,7 +158,7 @@ class TerraformImporter:
             )
 
             if result.returncode == 0:
-                logger.info(f"  ✓ Successfully imported {address}")
+                logger.info(f"  âœ“ Successfully imported {address}")
                 self.results.append({
                     "address": address,
                     "resource_id": resource.resource_id,
@@ -167,7 +168,7 @@ class TerraformImporter:
                 return True
             else:
                 error = result.stderr.strip()
-                logger.error(f"  ✗ Failed to import {address}: {error}")
+                logger.error(f"  âœ— Failed to import {address}: {error}")
                 self.results.append({
                     "address": address,
                     "resource_id": resource.resource_id,
@@ -177,7 +178,7 @@ class TerraformImporter:
                 return False
 
         except subprocess.TimeoutExpired:
-            logger.error(f"  ✗ Timeout importing {address}")
+            logger.error(f"  âœ— Timeout importing {address}")
             self.results.append({
                 "address": address,
                 "resource_id": resource.resource_id,
@@ -186,7 +187,7 @@ class TerraformImporter:
             })
             return False
         except Exception as e:
-            logger.error(f"  ✗ Exception importing {address}: {e}")
+            logger.error(f"  âœ— Exception importing {address}: {e}")
             self.results.append({
                 "address": address,
                 "resource_id": resource.resource_id,
@@ -526,3 +527,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // Connector module - bridges the Rust backend with the C frailbox runtime.
 //
 // This module provides the FFI bridge, type conversions, and high-level
@@ -50,3 +51,4 @@ pub use ffi::ConnectorError;
 // Re-export legacy types with deprecation notice
 #[allow(deprecated)]
 pub use legacy::V1Connector;
+

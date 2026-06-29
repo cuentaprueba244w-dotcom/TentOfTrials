@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // Wire format encoding and decoding for the Tent of Trials protocol.
 //
 // This module implements the binary encoding and decoding of protocol messages
@@ -391,3 +392,4 @@ mod tests {
         assert!(matches!(result, Err(ProtocolError::ChecksumMismatch)));
     }
 }
+

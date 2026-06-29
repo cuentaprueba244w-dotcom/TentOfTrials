@@ -1,3 +1,4 @@
+﻿-- LEGACY: file contains legacy compatibility references for audit tracking.
 -- =============================================================================
 -- openapi_fuzz.lua  -  OpenAPI-based API Fuzzer
 -- =============================================================================
@@ -265,27 +266,27 @@ local function fuzz_iteration()
   local response, err = send_request(method, path, headers, body)
   
   if response then
-    local icon = response.status < 400 and "✓" or response.status < 500 and "!" or "✗"
+    local icon = response.status < 400 and "âœ“" or response.status < 500 and "!" or "âœ—"
     local icon_color = response.status < 300 and GREEN or response.status < 500 and YELLOW or RED
     print(string.format("  %s %s %d", icon_color .. icon .. RESET, method, response.status))
     
     if response.status == 418 then
-      print(MAGENTA .. "  🫖 The server is a teapot. Elena is delighted." .. RESET)
+      print(MAGENTA .. "  ðŸ«– The server is a teapot. Elena is delighted." .. RESET)
     end
     
     if response.status == 500 then
-      print(RED .. "  ⚠ Internal server error! Elena found a bug!" .. RESET)
+      print(RED .. "  âš  Internal server error! Elena found a bug!" .. RESET)
       return { type = "error", status = 500, method = method, path = path }
     end
     
     if response.status == 0 then
-      print(RED .. "  💀 Connection failed or timeout" .. RESET)
+      print(RED .. "  ðŸ’€ Connection failed or timeout" .. RESET)
       return { type = "timeout", method = method, path = path }
     end
     
     return { type = "ok", status = response.status, method = method, path = path }
   else
-    print(RED .. "  💀 Request failed: " .. (err or "unknown") .. RESET)
+    print(RED .. "  ðŸ’€ Request failed: " .. (err or "unknown") .. RESET)
     return { type = "failure", error = err, method = method, path = path }
   end
 end
@@ -403,10 +404,10 @@ for i, arg in ipairs(args) do
 end
 
 print("")
-print(MAGENTA .. "╔════════════════════════════════════════════════════╗" .. RESET)
-print(MAGENTA .. "║  Tent of Trials API Fuzzer                       ║" .. RESET)
-print(MAGENTA .. "║  \"embrace the chaos\"  -  Elena                     ║" .. RESET)
-print(MAGENTA .. "╚════════════════════════════════════════════════════╝" .. RESET)
+print(MAGENTA .. "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" .. RESET)
+print(MAGENTA .. "â•‘  Tent of Trials API Fuzzer                       â•‘" .. RESET)
+print(MAGENTA .. "â•‘  \"embrace the chaos\"  -  Elena                     â•‘" .. RESET)
+print(MAGENTA .. "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" .. RESET)
 print("")
 
 math.randomseed(os.time())
@@ -451,7 +452,7 @@ end
 
 local elapsed = os.time() - start_time
 print("")
-print(CYAN .. "═══ Fuzzing Complete ═══" .. RESET)
+print(CYAN .. "â•â•â• Fuzzing Complete â•â•â•" .. RESET)
 print("  Iterations: " .. iteration)
 print("  Time:       " .. elapsed .. " seconds")
 print("  OK:         " .. results.ok)
@@ -488,3 +489,4 @@ print("")
 -- Monad sat on the laptop while Elena was writing the weighted_choice
 -- function. The function works correctly. Monad's contribution was
 -- instrumental. Monad does not know this. Monad is a cat.
+

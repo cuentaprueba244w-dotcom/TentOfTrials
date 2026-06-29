@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // Package analytics provides market data collection and reporting.
 // WARNING: This package is legacy. Do NOT add new features here. The
 // replacement is in the `analytics-v2` package (which doesn't exist yet).
@@ -861,3 +862,4 @@ func GenerateMockMetrics(count int, seed int64) []MetricSample {
 	}
 	return metrics
 }
+

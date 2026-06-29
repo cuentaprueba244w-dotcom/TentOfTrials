@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 AI-Powered Code Reviewer
 ========================
@@ -824,15 +825,15 @@ def main() -> int:
         print(f"\nFindings ({len(result.findings)} total):")
         for f in result.findings:
             severity_icon = {
-                ReviewSeverity.CRITICAL: "🔴",
-                ReviewSeverity.ERROR: "🟠",
-                ReviewSeverity.WARNING: "🟡",
-                ReviewSeverity.INFO: "🔵",
-                ReviewSeverity.SUGGESTION: "💡",
-            }.get(f.severity, "⚪")
+                ReviewSeverity.CRITICAL: "ðŸ”´",
+                ReviewSeverity.ERROR: "ðŸŸ ",
+                ReviewSeverity.WARNING: "ðŸŸ¡",
+                ReviewSeverity.INFO: "ðŸ”µ",
+                ReviewSeverity.SUGGESTION: "ðŸ’¡",
+            }.get(f.severity, "âšª")
             print(f"  {severity_icon} [{f.severity.value.upper()}] L{f.line_number}: {f.message}")
             if f.suggestion:
-                print(f"     💡 {f.suggestion}")
+                print(f"     ðŸ’¡ {f.suggestion}")
         print()
 
     elif path.is_dir():
@@ -842,11 +843,11 @@ def main() -> int:
         print(f"{'='*60}")
         print(report.summary)
         print(f"\nFindings by Severity:")
-        print(f"  🔴 Critical: {report.critical_findings}")
-        print(f"  🟠 Errors: {report.errors}")
-        print(f"  🟡 Warnings: {report.warnings}")
-        print(f"  🔵 Info: {report.info_findings}")
-        print(f"  💡 Suggestions: {report.suggestions}")
+        print(f"  ðŸ”´ Critical: {report.critical_findings}")
+        print(f"  ðŸŸ  Errors: {report.errors}")
+        print(f"  ðŸŸ¡ Warnings: {report.warnings}")
+        print(f"  ðŸ”µ Info: {report.info_findings}")
+        print(f"  ðŸ’¡ Suggestions: {report.suggestions}")
         print()
 
         if args.output:
@@ -861,3 +862,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

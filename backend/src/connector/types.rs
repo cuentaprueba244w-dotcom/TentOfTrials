@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // Shared types between the Rust backend and the C frailbox connector.
 //
 // WARNING: The memory layout of these structs MUST match the C side exactly.
@@ -540,3 +541,4 @@ impl ConnectorResult {
         )
     }
 }
+

@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 AI-Powered Legacy Code Migrator
 ================================
@@ -747,11 +748,11 @@ def main() -> int:
             print(f"\nDetected Patterns:")
             for p in patterns:
                 severity_color = {
-                    PatternSeverity.CRITICAL: "🔴",
-                    PatternSeverity.HIGH: "🟠",
-                    PatternSeverity.MEDIUM: "🟡",
-                    PatternSeverity.LOW: "⚪",
-                }.get(p.severity, "⚪")
+                    PatternSeverity.CRITICAL: "ðŸ”´",
+                    PatternSeverity.HIGH: "ðŸŸ ",
+                    PatternSeverity.MEDIUM: "ðŸŸ¡",
+                    PatternSeverity.LOW: "âšª",
+                }.get(p.severity, "âšª")
                 print(f"  {severity_color} [{p.severity.value.upper()}] Line {p.line_number}: {p.name}")
                 print(f"    {p.description} (confidence: {p.confidence:.0%})")
             print()
@@ -782,7 +783,7 @@ def main() -> int:
         print(f"Estimated Effort: {report.estimated_total_effort_hours:.1f}h")
         print(f"\nRecommendations:")
         for rec in report.recommendations:
-            print(f"  → {rec}")
+            print(f"  â†’ {rec}")
 
         if args.output:
             engine.generate_report_json(report, Path(args.output))
@@ -795,3 +796,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

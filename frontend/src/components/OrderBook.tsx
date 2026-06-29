@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 /**
  * Order book component displaying real-time bid/ask data.
  * This is a legacy component from the v1 trading interface that has been
@@ -393,7 +394,7 @@ export function OrderBook({
             style={{ textAlign: col.align, flex: col.width ? undefined : 1, width: col.width }}
           >
             {col.label}
-            {col.active && <span className="orderbook-col-sort">{col.direction === 'asc' ? '▲' : '▼'}</span>}
+            {col.active && <span className="orderbook-col-sort">{col.direction === 'asc' ? 'â–²' : 'â–¼'}</span>}
           </div>
         ))}
       </div>
@@ -450,3 +451,4 @@ export function OrderBook({
     </div>
   );
 }
+

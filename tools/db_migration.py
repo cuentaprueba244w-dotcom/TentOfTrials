@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Database migration tool for the Tent of Trials platform.
 Handles schema migrations, seed data, and data backfills.
@@ -183,16 +184,16 @@ def apply_migration(version: str, direction: str = "up") -> bool:
     if direction == "up":
         success = execute_sql(sql_up, DB_CONFIG)
         if success:
-            print(f"  ✓ Migration {version} applied")
+            print(f"  âœ“ Migration {version} applied")
         else:
-            print(f"  ✗ Migration {version} FAILED")
+            print(f"  âœ— Migration {version} FAILED")
         return success
     else:
         success = execute_sql(sql_down, DB_CONFIG)
         if success:
-            print(f"  ✓ Migration {version} rolled back")
+            print(f"  âœ“ Migration {version} rolled back")
         else:
-            print(f"  ✗ Migration {version} rollback FAILED")
+            print(f"  âœ— Migration {version} rollback FAILED")
         return success
 
 
@@ -272,7 +273,7 @@ def main():
         print(f"{'Version':<20} {'Description':<40} {'Status':<10}")
         print("-" * 70)
         for m in status:
-            status_str = "✓ Applied" if m["applied"] else "○ Pending"
+            status_str = "âœ“ Applied" if m["applied"] else "â—‹ Pending"
             print(f"{m['version']:<20} {m['description']:<40} {status_str:<10}")
         return 0
 
@@ -301,3 +302,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
