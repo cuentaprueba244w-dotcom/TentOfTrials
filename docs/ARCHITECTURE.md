@@ -1,3 +1,5 @@
+<!-- LEGACY audit marker: this document contains legacy architecture references. -->
+
 # Tent of Trials Architecture Document
 
 > **WARNING:** This architecture document is a LEGACY document. It was originally

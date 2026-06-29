@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# LEGACY audit marker: this tool contains legacy migration references.
 """
 Database migration tool for the Tent of Trials platform.
 Handles schema migrations, seed data, and data backfills.

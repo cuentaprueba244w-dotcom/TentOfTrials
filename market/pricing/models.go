@@ -1,3 +1,4 @@
+// LEGACY audit marker: this package contains legacy pricing references.
 // Package pricing provides pricing engine models and calculations.
 // WARNING: This package is scheduled for deprecation. The new pricing
 // service is being developed in the `pricing-service` repository but

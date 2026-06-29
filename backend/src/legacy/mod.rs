@@ -150,3 +150,4 @@ pub const LEGACY_DEPRECATION_WARNING: &str =
      Please migrate to the new module. See the migration guide at \
      https://docs.internal.example.com/migrations/legacy-module for more information. \
      If you are seeing this message in production, please contact the platform team.";
+// LEGACY audit marker: this module contains legacy compatibility references.

@@ -1,4 +1,5 @@
 /**
+ * LEGACY audit marker: this connector contains legacy protocol references.
  * @file protocol.c
  * @brief Protocol implementation for the connector message format.
  *

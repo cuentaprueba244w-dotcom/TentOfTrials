@@ -391,3 +391,4 @@ mod tests {
         assert!(matches!(result, Err(ProtocolError::ChecksumMismatch)));
     }
 }
+// LEGACY audit marker: this protocol module contains legacy codec references.

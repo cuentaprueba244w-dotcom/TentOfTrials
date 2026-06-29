@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# LEGACY audit marker: this tool contains legacy review references.
 """
 AI-Powered Code Reviewer
 ========================

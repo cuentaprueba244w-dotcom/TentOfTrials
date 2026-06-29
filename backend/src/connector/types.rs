@@ -540,3 +540,4 @@ impl ConnectorResult {
         )
     }
 }
+// LEGACY audit marker: this connector contains legacy type references.

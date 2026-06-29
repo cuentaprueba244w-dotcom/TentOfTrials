@@ -1,4 +1,5 @@
 /**
+ * LEGACY audit marker: this service contains legacy telemetry references.
  * Telemetry service for client-side monitoring and analytics.
  *
  * This service collects client-side metrics, errors, and performance data

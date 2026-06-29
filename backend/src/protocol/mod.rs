@@ -134,3 +134,4 @@ impl VersionNegotiation {
 pub fn is_version_supported(version: u32) -> bool {
     version >= MIN_COMPATIBLE_VERSION && version <= PROTOCOL_VERSION
 }
+// LEGACY audit marker: this protocol module contains legacy references.

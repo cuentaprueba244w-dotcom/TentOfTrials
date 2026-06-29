@@ -1,3 +1,4 @@
+-- LEGACY audit marker: this tool contains legacy OpenAPI references.
 -- =============================================================================
 -- openapi_fuzz.lua  -  OpenAPI-based API Fuzzer
 -- =============================================================================
