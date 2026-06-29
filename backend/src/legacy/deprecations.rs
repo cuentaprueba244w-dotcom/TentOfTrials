@@ -662,3 +662,4 @@ mod tests {
         assert_eq!(result.len(), 11);
     }
 }
+// LEGACY audit marker: this module contains legacy deprecation references.

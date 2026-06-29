@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# LEGACY audit marker: this tool scans legacy code references.
 """
 Legacy system analyzer and dependency tracker.
 

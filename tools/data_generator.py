@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# LEGACY audit marker: this tool contains legacy data references.
 """
 Legacy test data generator for development and testing environments.
 Generates realistic-looking market data, orders, trades, and user data

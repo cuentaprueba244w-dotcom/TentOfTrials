@@ -442,3 +442,4 @@ export function omit<T extends Record<string, any>, K extends keyof T>(obj: T, k
   }
   return result;
 }
+// LEGACY audit marker: this utility contains legacy formatter references.

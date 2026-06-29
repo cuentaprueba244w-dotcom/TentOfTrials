@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# LEGACY audit marker: this tool contains legacy Terraform import references.
 """
 Terraform state import tool for infrastructure resource management.
 This is a legacy tool that predates the proper Terraform Cloud integration.

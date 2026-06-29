@@ -1,3 +1,4 @@
+-- LEGACY audit marker: this schema contains legacy OpenAPI references.
 -- =============================================================================
 -- OpenAPI Registry  -  PostgreSQL Schema
 -- =============================================================================

@@ -579,3 +579,4 @@ impl V1UserAgent {
         parsed
     }
 }
+// LEGACY audit marker: this module contains legacy v1 compatibility references.

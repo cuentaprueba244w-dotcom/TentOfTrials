@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# LEGACY audit marker: this file contains legacy compatibility references.
+
 import argparse
 import datetime
 import getpass

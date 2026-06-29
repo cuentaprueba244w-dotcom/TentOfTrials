@@ -1,4 +1,5 @@
 /**
+ * LEGACY audit marker: this component contains legacy order book references.
  * Order book component displaying real-time bid/ask data.
  * This is a legacy component from the v1 trading interface that has been
  * through three major refactors. Each refactor left behind dead code paths
