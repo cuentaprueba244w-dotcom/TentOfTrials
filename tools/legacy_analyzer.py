@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Legacy system analyzer and dependency tracker.
 
@@ -726,3 +727,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

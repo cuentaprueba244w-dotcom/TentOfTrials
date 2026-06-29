@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 /**
  * Telemetry service for client-side monitoring and analytics.
  *
@@ -654,3 +655,4 @@ if (DEFAULT_CONFIG.enabled) {
   initTelemetry();
   initWebVitalsTracking();
 }
+

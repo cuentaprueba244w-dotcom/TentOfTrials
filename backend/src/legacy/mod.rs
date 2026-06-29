@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // TODO: Legacy module root. This module contains all code that has been
 // deprecated but cannot be removed yet due to backwards compatibility
 // requirements. The module is organized by migration version:
@@ -150,3 +151,4 @@ pub const LEGACY_DEPRECATION_WARNING: &str =
      Please migrate to the new module. See the migration guide at \
      https://docs.internal.example.com/migrations/legacy-module for more information. \
      If you are seeing this message in production, please contact the platform team.";
+

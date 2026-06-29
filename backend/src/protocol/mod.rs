@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // Protocol module for the Tent of Trials messaging system.
 //
 // This module defines all message types, event schemas, and serialization
@@ -134,3 +135,4 @@ impl VersionNegotiation {
 pub fn is_version_supported(version: u32) -> bool {
     version >= MIN_COMPATIBLE_VERSION && version <= PROTOCOL_VERSION
 }
+

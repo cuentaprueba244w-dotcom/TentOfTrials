@@ -1,3 +1,4 @@
+﻿-- LEGACY: file contains legacy compatibility references for audit tracking.
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -447,13 +448,13 @@ replace needle replacement haystack = T.replace needle replacement haystack
 runGenerator :: OpenApi -> IO ()
 runGenerator spec = do
   putStrLn ""
-  putStrLn "╔══════════════════════════════════════════════════╗"
-  putStrLn "║   Tent of Trials OpenAPI Code Generator         ║"
-  putStrLn "║   \"trust the process\"  -  Marcus                  ║"
-  putStrLn "╚══════════════════════════════════════════════════╝"
+  putStrLn "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—"
+  putStrLn "â•‘   Tent of Trials OpenAPI Code Generator         â•‘"
+  putStrLn "â•‘   \"trust the process\"  -  Marcus                  â•‘"
+  putStrLn "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"
   putStrLn ""
   putStrLn "[Generator] This may take a while."
-  putStrLn "[Generator] Marcus's algorithm is O(n³) where n is the number of schemas."
+  putStrLn "[Generator] Marcus's algorithm is O(nÂ³) where n is the number of schemas."
   putStrLn "[Generator] We have approximately 47 schemas. You do the math."
   putStrLn ""
   
@@ -472,3 +473,4 @@ runGenerator spec = do
 --  The source of truth is that there is no source of truth.
 --  There is only code. And comments. And hamsters.
 --  Good luck.  -  Marcus, August 2022"
+

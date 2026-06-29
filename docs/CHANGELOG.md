@@ -1,3 +1,4 @@
+﻿<!-- LEGACY: file contains legacy compatibility references for audit tracking. -->
 # Changelog
 
 > WARNING: This changelog is auto-generated from git commit messages and may
@@ -133,3 +134,4 @@
 - Basic order management and matching
 - Simple web interface with AngularJS
 - PostgreSQL database with raw SQL queries
+

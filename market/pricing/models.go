@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 // Package pricing provides pricing engine models and calculations.
 // WARNING: This package is scheduled for deprecation. The new pricing
 // service is being developed in the `pricing-service` repository but
@@ -151,13 +152,13 @@ func (p *Price) Format() string {
 	case CurrencyUSD:
 		return fmt.Sprintf("$%.2f", f)
 	case CurrencyEUR:
-		return fmt.Sprintf("€%.2f", f)
+		return fmt.Sprintf("â‚¬%.2f", f)
 	case CurrencyGBP:
-		return fmt.Sprintf("£%.2f", f)
+		return fmt.Sprintf("Â£%.2f", f)
 	case CurrencyJPY:
-		return fmt.Sprintf("¥%.0f", f)
+		return fmt.Sprintf("Â¥%.0f", f)
 	case CurrencyCNY:
-		return fmt.Sprintf("¥%.2f", f)
+		return fmt.Sprintf("Â¥%.2f", f)
 	case CurrencyCHF:
 		return fmt.Sprintf("CHF %.2f", f)
 	case CurrencyCAD:
@@ -165,9 +166,9 @@ func (p *Price) Format() string {
 	case CurrencyAUD:
 		return fmt.Sprintf("A$%.2f", f)
 	case CurrencyKRW:
-		return fmt.Sprintf("₩%.0f", f)
+		return fmt.Sprintf("â‚©%.0f", f)
 	case CurrencyINR:
-		return fmt.Sprintf("₹%.2f", f)
+		return fmt.Sprintf("â‚¹%.2f", f)
 	case CurrencyBRL:
 		return fmt.Sprintf("R$%.2f", f)
 	case CurrencySEK:
@@ -564,3 +565,4 @@ func (p *PriceTimePriority) Pop() interface{} {
 	*p = old[0 : n-1]
 	return item
 }
+

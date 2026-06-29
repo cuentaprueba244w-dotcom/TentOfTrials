@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 /**
  * Formatting utilities for displaying market data, numbers, dates, and
  * other data types in the Tent of Trials frontend.
@@ -88,7 +89,7 @@ export function formatCurrency(value: number, currency: string = 'USD'): string 
   const absValue = Math.abs(value);
   const negative = value < 0 ? '-' : '';
   const symbols: Record<string, string> = {
-    USD: '$', EUR: '€', GBP: '£', JPY: '¥', BTC: '₿', ETH: 'Ξ',
+    USD: '$', EUR: 'â‚¬', GBP: 'Â£', JPY: 'Â¥', BTC: 'â‚¿', ETH: 'Îž',
   };
   const symbol = symbols[currency] || `${currency} `;
 
@@ -442,3 +443,4 @@ export function omit<T extends Record<string, any>, K extends keyof T>(obj: T, k
   }
   return result;
 }
+

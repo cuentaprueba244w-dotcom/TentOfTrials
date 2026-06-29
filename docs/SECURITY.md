@@ -1,3 +1,4 @@
+﻿<!-- LEGACY: file contains legacy compatibility references for audit tracking. -->
 # Security Policy and Procedures
 
 > WARNING: This security document is a LEGACY document. The security team
@@ -10,9 +11,9 @@
 
 | Version | Supported |
 |---------|-----------|
-| 3.x | ✅ Active support |
-| 2.x | ⚠️ Security fixes only (EOL: 2024-06-30) |
-| 1.x | ❌ No longer supported |
+| 3.x | âœ… Active support |
+| 2.x | âš ï¸ Security fixes only (EOL: 2024-06-30) |
+| 1.x | âŒ No longer supported |
 
 ## Reporting a Vulnerability
 
@@ -171,3 +172,4 @@ work with researchers to coordinate disclosure timing and credit.
 - Development dependencies allow semver-compatible ranges
 - All dependencies are reviewed before addition
 - Deprecated dependencies are replaced within 90 days
+

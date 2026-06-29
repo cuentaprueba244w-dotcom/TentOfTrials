@@ -1,3 +1,4 @@
+﻿# LEGACY: file contains legacy compatibility references for audit tracking.
 # =============================================================================
 # TENT OF TRIALS  -  OPENAPI 3.1.0 SPECIFICATION
 # =============================================================================
@@ -1789,3 +1790,4 @@ tags:
         file on a GitHub repo owned by a user account that has been deleted.
         The README says, in its entirety: "it's like a brewery but for
         APIs." We have no additional information.
+

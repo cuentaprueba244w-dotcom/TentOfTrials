@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Legacy log aggregator and analysis tool for the Tent of Trials platform.
 
@@ -464,3 +465,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

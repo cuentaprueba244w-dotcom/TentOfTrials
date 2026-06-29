@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Legacy test data generator for development and testing environments.
 Generates realistic-looking market data, orders, trades, and user data
@@ -364,3 +365,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

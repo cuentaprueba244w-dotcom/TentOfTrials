@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Legacy deployment script for the Tent of Trials platform.
 
@@ -442,9 +443,9 @@ def main():
         save_deployment_history(args.env, history)
 
         if success:
-            print(f"✓ {service} deployed successfully to {args.env}")
+            print(f"âœ“ {service} deployed successfully to {args.env}")
         else:
-            print(f"✗ {service} deployment FAILED")
+            print(f"âœ— {service} deployment FAILED")
             all_successful = False
             if args.service != "all":
                 break
@@ -454,3 +455,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

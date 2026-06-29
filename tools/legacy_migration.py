@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
+# LEGACY: file contains legacy compatibility references for audit tracking.
 """
 Legacy data migration tool for Tent of Trials.
 
@@ -1162,3 +1163,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

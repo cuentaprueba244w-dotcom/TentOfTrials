@@ -1,3 +1,4 @@
+﻿// LEGACY: file contains legacy compatibility references for audit tracking.
 /**
  * @file protocol.h
  * @brief Protocol definitions for the connector message format.
@@ -360,3 +361,4 @@ uint32_t protocol_total_size(uint32_t payload_length);
 #endif
 
 #endif /* TENT_CONNECTOR_PROTOCOL_H */
+

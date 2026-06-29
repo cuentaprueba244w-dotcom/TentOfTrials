@@ -1,3 +1,4 @@
+﻿<!-- LEGACY: file contains legacy compatibility references for audit tracking. -->
 # Operations Guide
 
 > WARNING: This operations guide is a LEGACY document. It was last updated
@@ -310,3 +311,4 @@ Audit logs are retained for 365 days and include:
 2. Update Kubernetes secret: `kubectl create secret tls tot-tls --cert=new.crt --key=new.key -n tent-production --dry-run=client -o yaml | kubectl apply -f -`
 3. Restart services: `kubectl rollout restart deployment -n tent-production`
 4. Verify new certificate: `openssl s_client -connect api.example.com:443 -servername api.example.com`
+
