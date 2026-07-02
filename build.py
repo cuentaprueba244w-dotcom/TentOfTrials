@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import sys
+import io
+
+# Force UTF-8 on Windows to avoid UnicodeEncodeError
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 import argparse
 import datetime
@@ -776,6 +784,34 @@ def print_summary(results: list[tuple[str, bool, float, str, Optional[str]]]):
           f"{color(str(failed) + ' failed', Colors.RED)}, "
           f"{total_time:.1f}s total")
 
+def parse_module_names(module_arg: str) -> list[str]:
+    """Parse comma-separated module names with optional spaces.
+
+    >>> parse_module_names("backend")
+    ['backend']
+    >>> parse_module_names("backend, frontend")
+    ['backend', 'frontend']
+    >>> parse_module_names("backend ,frontend, market")
+    ['backend', 'frontend', 'market']
+    """
+    if not module_arg or not module_arg.strip():
+        return []
+    return [n.strip() for n in module_arg.split(",") if n.strip()]
+
+
+def validate_module_names(
+    names: list[str], modules: list[Module]
+) -> tuple[list[Module], list[str]]:
+    """Validate module names against the MODULES registry.
+
+    Returns (selected_modules, invalid_names).
+    """
+    valid_names = {m.name for m in modules}
+    selected = [m for m in modules if m.name in names]
+    invalid = [n for n in names if n not in valid_names]
+    return selected, invalid
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Tent of Trials  -  Multi-Language Build System",
@@ -814,6 +850,10 @@ Diagnostic bundle:
         "--list", action="store_true",
         help="List available modules and exit",
     )
+    parser.add_argument(
+        "--list-modules", action="store_true",
+        help="List available modules with details and exit",
+    )
 
     args = parser.parse_args()
 
@@ -821,13 +861,30 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list or args.list_modules:
         print(f"  {color('Available modules:', Colors.BOLD)}")
         for m in MODULES:
             print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
             print(f"      dir: {m.dir.relative_to(ROOT)}")
             print(f"      build: {' '.join(m.build_cmd)}")
+            if m.build_dir:
+                print(f"      artifact: {m.build_dir.relative_to(ROOT)}")
         return 0
+
+    # Validate modules before any build work
+    if args.module == "all":
+        selected = MODULES
+    else:
+        names = parse_module_names(args.module)
+        if not names:
+            print(f"  {color('✗ No modules specified', Colors.RED)}")
+            print(f"    Available: {', '.join(m.name for m in MODULES)}")
+            return 1
+        selected, invalid = validate_module_names(names, MODULES)
+        if invalid:
+            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(invalid)}")
+            print(f"    Available: {', '.join(m.name for m in MODULES)}")
+            return 1
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
     missing = check_prerequisites()
@@ -840,16 +897,6 @@ Diagnostic bundle:
         print(f"  {color(msg, Colors.GRAY)}")
     else:
         print(f"  {color('✓ All prerequisites found', Colors.GREEN)}")
-    if args.module == "all":
-        selected = MODULES
-    else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
-            return 1
 
     if not selected:
         print(f"  No modules selected.")
