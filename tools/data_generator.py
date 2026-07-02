@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# LEGACY: contains legacy code
 """
 Legacy test data generator for development and testing environments.
 Generates realistic-looking market data, orders, trades, and user data
@@ -342,8 +343,6 @@ def main():
             all_candles[key] = candles
 
     output_format = args.format
-    if output_format == "both":
-        output_format = "json"  # Default for combined
 
     # Export
     if output_format in ("json", "both"):
