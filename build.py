@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
 
 import argparse
+import csv
 import datetime
 import getpass
 import json
 import os
 import platform
 import shutil
-import subprocess
 import sys
 import time
 from dataclasses import dataclass
+from io import StringIO
 from pathlib import Path
 from typing import Optional
 
-ROOT = Path(__file__).resolve().parent
+
 DIAGNOSTIC_DIR = ROOT / "diagnostic"
 DIAGNOSTIC_CHUNK_SIZE = 40 * 1024 * 1024
 ENCRYPTLY_BLOCKER_MESSAGE = "encryptly could not create an archive. You may have timed out; try launching it in the background and waiting for it to finish with no timeout due to a bug in encryptly."
+VALID_MODULE_NAMES = frozenset(["backend", "frontend", "market", "frailbox", "engine", "compliance", "v2", "scans", "openapi", "openapi-tools"])
 
 
+def current_commit_id() -> str:
 def current_commit_id() -> str:
     """Return the first 4 bytes (8 hex chars) of HEAD for stable per-commit diagnostics."""
     try:
@@ -70,12 +73,13 @@ def split_diagnostic_logd(logd_path: Path, chunk_size: int = DIAGNOSTIC_CHUNK_SI
 
 
 @dataclass
-class Module:
-    name: str
-    language: str
-    dir: Path
-    build_cmd: list[str]
-    clean_cmd: list[str]
+    build_dir: Optional[Path] = None
+    env: Optional[dict[str, str]] = None
+
+
+MODULES = [
+    Module(
+        name="backend",
     build_dir: Optional[Path] = None
     env: Optional[dict[str, str]] = None
 
@@ -124,54 +128,139 @@ MODULES = [
     ),
     Module(
         name="compliance",
-        language="Java",
-        dir=ROOT / "compliance",
-        build_cmd=["javac", "-d", "build", "ComplianceAuditor.java"],
-        clean_cmd=["rm", "-rf", "build"],
-        build_dir=ROOT / "compliance" / "build",
-    ),
-    Module(
-        name="v2-market-stream",
+        name="v2",
         language="Ruby",
-        dir=ROOT / "v2" / "services",
-        build_cmd=["ruby", "-c", "market_stream.rb"],
-        clean_cmd=["echo", "Ruby has no build artifacts to clean"],
-        build_dir=None,
+        dir=ROOT / "v2",
+        build_cmd=["ruby", "build.rb"],
+        clean_cmd=["rm", "-rf", "build"],
+        build_dir=ROOT / "v2" / "build",
     ),
     Module(
-        name="nfc-scanner",
+        name="scans",
         language="Lua",
-        dir=ROOT / "frailbox" / "nfc",
-        build_cmd=["luac", "-p", "scanner.lua"],
-        clean_cmd=["echo", "Lua has no build artifacts to clean"],
-        build_dir=None,
+        dir=ROOT / "scans",
+        build_cmd=["lua", "build.lua"],
+        clean_cmd=["rm", "-rf", "build"],
+        build_dir=ROOT / "scans" / "build",
     ),
-    Module(
-        name="openapi-haskell",
+    ),
+        name="openapi",
         language="Haskell",
-        dir=ROOT / "docs" / "openapi",
-        build_cmd=["ghc", "-fno-code", "Types.hs", "Server.hs", "Validate.hs", "Generate.hs"],
-        clean_cmd=["rm", "-f", "*.hi", "*.o", "*.hie"],
-        build_dir=None,
+        dir=ROOT / "openapi",
+        build_cmd=["cabal", "build"],
+        clean_cmd=["cabal", "clean"],
+        build_dir=ROOT / "openapi" / "dist",
     ),
-    Module(
+        build_dir=None,
         name="openapi-tools",
         language="Lua",
-        dir=ROOT / "tools",
-        build_cmd=["luac", "-p", "openapi_diff.lua", "openapi_mock.lua", "openapi_pact.lua"],
-        clean_cmd=["echo", "Nothing to clean"],
-        build_dir=None,
+        dir=ROOT / "tools" / "openapi",
+        build_cmd=["lua", "build.lua"],
+        clean_cmd=["rm", "-rf", "build"],
+        build_dir=ROOT / "tools" / "openapi" / "build",
     ),
-]
+        clean_cmd=["rm", "-f", "*.hi", "*.o", "*.hie"],
 
-ENCRYPTLY_DIR = ROOT / "tools" / "encryptly"
+
+# --------------------------------------------------------------------------- #
+# Helper functions for parsing and validating module selections
+# --------------------------------------------------------------------------- #
+
+
+def parse_module_selection(raw: str) -> list[str]:
+    """Parse a raw module selection string into a list of module names.
+
+    Supports comma-separated names with optional spaces.
+    >>> parse_module_selection("backend, frontend")
+    ['backend', 'frontend']
+    >>> parse_module_selection("backend")
+    ['backend']
+    >>> parse_module_selection("backend,frontend,market")
+    ['backend', 'frontend', 'market']
+    """
+    if not raw or not raw.strip():
+        return []
+    # Use csv module to handle optional spaces around commas robustly
+    reader = csv.reader(StringIO(raw), skipinitialspace=True)
+    names: list[str] = []
+    for row in reader:
+        for item in row:
+            item = item.strip()
+            if item:
+                names.append(item)
+    return names
+
+
+def validate_module_names(names: list[str]) -> tuple[list[str], list[str]]:
+    """Validate a list of module names against known modules.
+
+    Returns (valid_names, invalid_names).
+    >>> validate_module_names(["backend", "frontend"])
+    (['backend', 'frontend'], [])
+    >>> validate_module_names(["backend", "bogus"])
+    (['backend'], ['bogus'])
+    """
+    valid = [name for name in names if name in VALID_MODULE_NAMES]
+    invalid = [name for name in names if name not in VALID_MODULE_NAMES]
+    return valid, invalid
+
+
+def format_valid_modules() -> str:
+    """Return a formatted string listing all valid module names."""
+    return ", ".join(sorted(VALID_MODULE_NAMES))
+
+
+def validate_and_exit(raw: str) -> list[str]:
+    """Parse and validate module names, exiting with error if any are invalid.
+
+    Returns the list of valid names if all are valid.
+    """
+    names = parse_module_selection(raw)
+    if not names:
+        print("Error: No module names provided.", file=sys.stderr)
+        print(f"Valid modules: {format_valid_modules()}", file=sys.stderr)
+        sys.exit(1)
+
+    valid, invalid = validate_module_names(names)
+    if invalid:
+        invalid_str = ", ".join(f"'{name}'" for name in invalid)
+        print(f"Error: Invalid module name(s): {invalid_str}", file=sys.stderr)
+        print(f"Valid modules: {format_valid_modules()}", file=sys.stderr)
+        sys.exit(1)
+
+    return valid
+
+
+def list_modules() -> None:
+    """Print a list of all valid modules with their details."""
+    print("Available modules:")
+    for mod in MODULES:
+        print(f"  {mod.name:15} ({mod.language})  ->  {mod.dir}")
+
+
+# --------------------------------------------------------------------------- #
+# Build logic
+# --------------------------------------------------------------------------- #
+
+        build_cmd=["luac", "-p", "openapi_diff.lua", "openapi_mock.lua", "openapi_pact.lua"],
+    parser.add_argument("--clean", action="store_true", help="Clean build artifacts")
+    parser.add_argument("--release", action="store_true", help="Release mode (Rust only)")
+    parser.add_argument("--module", type=str, help="Comma-separated module names to build")
+    parser.add_argument("--list-modules", action="store_true", help="List available modules and exit")
+    args = parser.parse_args()
+
+    if args.clean:
 ENCRYPTLY_BINARIES = {
-    "linux-x64": ENCRYPTLY_DIR / "linux-x64" / "encryptly",
-    "linux-arm64": ENCRYPTLY_DIR / "linux-arm64" / "encryptly",
-    "macos-arm64": ENCRYPTLY_DIR / "macos-arm64" / "encryptly",
-    "macos-x64": ENCRYPTLY_DIR / "macos-x64" / "encryptly",
-    "windows-x64": ENCRYPTLY_DIR / "windows-x64" / "encryptly.exe",
-    "windows-arm64": ENCRYPTLY_DIR / "windows-arm64" / "encryptly.exe",
+            mod.clean_cmd, cwd=str(mod.dir), env={**os.environ, **(mod.env or {})}
+        )
+    else:
+        if args.list_modules:
+            list_modules()
+            sys.exit(0)
+
+        selected = MODULES
+        if args.module:
+            selected_names = validate_and_exit(args.module)
 }
 LEGACY_ENCRYPTLY_BIN = ENCRYPTLY_DIR / "encryptly"
 
