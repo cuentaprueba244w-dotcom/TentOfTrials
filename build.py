@@ -79,6 +79,47 @@ class Module:
     build_dir: Optional[Path] = None
     env: Optional[dict[str, str]] = None
 
+def get_module_names() -> list[str]:
+    """Return sorted list of all valid module names."""
+    return sorted(m.name for m in MODULES)
+
+
+def resolve_modules(module_arg: str) -> tuple[list[Module], list[str]]:
+    """
+    Parse a module argument and return (selected_modules, unknown_names).
+
+    The module_arg can be 'all' or a comma-separated list of module names
+    (with optional whitespace around commas). Returns the matching Module
+    objects and any names that were not found.
+    """
+    if module_arg.strip().lower() == "all":
+        return list(MODULES), []
+
+    names = [n.strip() for n in module_arg.split(",")]
+    names = [n for n in names if n]  # drop empty segments
+
+    valid_names = {m.name for m in MODULES}
+    selected = [m for m in MODULES if m.name in names]
+    unknown = list(set(names) - valid_names)
+
+    return selected, unknown
+
+
+def list_modules_str() -> str:
+    """Return a formatted multi-line string describing all available modules."""
+    lines: list[str] = []
+    lines.append(f"  {'Module':<24} {'Language':<14} Directory")
+    lines.append(f"  {'-' * 24} {'-' * 14} {'-' * 40}")
+    for m in MODULES:
+        dir_rel = m.dir.relative_to(ROOT)
+        build_cmd = " ".join(m.build_cmd)
+        lines.append(
+            f"  {m.name:<24} {m.language:<14} {dir_rel}"
+        )
+        lines.append(f"  {'':>24} {'':>14} build: {build_cmd}")
+    return "\n".join(lines)
+
+
 MODULES = [
     Module(
         name="backend",
@@ -788,6 +829,8 @@ Examples:
   python3 build.py --clean            Clean all artifacts
   python3 build.py --release          Release build (Rust only)
   python3 build.py --verbose          Verbose output
+  python3 build.py --list-modules     List available modules
+  python3 build.py --list             (alias for --list-modules)
 
 Diagnostic bundle:
   python3 build.py
@@ -811,8 +854,14 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
+        "--list-modules", action="store_true",
+        dest="list_modules",
+        help="List available modules with details and exit",
+    )
+    parser.add_argument(
         "--list", action="store_true",
-        help="List available modules and exit",
+        dest="list_legacy",
+        help=argparse.SUPPRESS,
     )
 
     args = parser.parse_args()
@@ -821,12 +870,10 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list_modules or args.list_legacy:
         print(f"  {color('Available modules:', Colors.BOLD)}")
-        for m in MODULES:
-            print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
-            print(f"      dir: {m.dir.relative_to(ROOT)}")
-            print(f"      build: {' '.join(m.build_cmd)}")
+        print()
+        print(list_modules_str())
         return 0
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
@@ -843,12 +890,11 @@ Diagnostic bundle:
     if args.module == "all":
         selected = MODULES
     else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
+        selected, unknown = resolve_modules(args.module)
+        if unknown:
+            valid = get_module_names()
+            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(sorted(unknown))}")
+            print(f"    {color('Valid modules:', Colors.CYAN)} {', '.join(valid)}")
             return 1
 
     if not selected:
