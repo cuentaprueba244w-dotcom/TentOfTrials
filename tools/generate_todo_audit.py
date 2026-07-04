@@ -1,0 +1,246 @@
+#!/usr/bin/env python3
+"""Generate a comprehensive TODO audit report for the repository."""
+
+from __future__ import annotations
+
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+
+
+SCAN_EXTENSIONS = {
+    ".rs", ".py", ".js", ".ts", ".jsx", ".tsx", ".go", ".c", ".cpp", ".h",
+    ".java", ".rb", ".lua", ".hs", ".sql", ".tf", ".sh", ".ps1",
+    ".yml", ".yaml", ".toml", ".json", ".md", ".css", ".html",
+}
+
+EXCLUDED_DIRS = {
+    ".git", "node_modules", "target", "__pycache__", ".venv", "venv",
+    "dist", "build", ".mypy_cache", ".pytest_cache", ".ruff_cache",
+}
+
+KEYWORD = "TO" + "DO"
+REPORT_NAME = KEYWORD + "_AUDIT.md"
+
+
+@dataclass(frozen=True)
+class Finding:
+    file_path: str
+    line_number: int
+    description: str
+    estimated_hours: int
+
+
+def repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def should_skip(path: Path) -> bool:
+    return any(part in EXCLUDED_DIRS for part in path.parts)
+
+
+def is_probably_binary(data: bytes) -> bool:
+    if b"\x00" in data:
+        return True
+
+    sample = data[:4096]
+    if not sample:
+        return False
+
+    text_chars = bytearray({7, 8, 9, 10, 12, 13, 27})
+    text_chars.extend(range(0x20, 0x100))
+    non_text = sample.translate(None, bytes(text_chars))
+    return len(non_text) / max(len(sample), 1) > 0.30
+
+
+def read_text(path: Path) -> str | None:
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return None
+
+    if is_probably_binary(data):
+        return None
+
+    for encoding in ("utf-8", "utf-8-sig", "latin-1"):
+        try:
+            return data.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+
+    return None
+
+
+def iter_code_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+
+    for path in root.rglob("*"):
+        if should_skip(path):
+            continue
+
+        if not path.is_file():
+            continue
+
+        if path.suffix.lower() not in SCAN_EXTENSIONS:
+            continue
+
+        files.append(path)
+
+    return sorted(files)
+
+
+def relative_path(path: Path, root: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def collect_findings(root: Path) -> list[Finding]:
+    findings: list[Finding] = []
+    needle = KEYWORD.lower()
+
+    for path in iter_code_files(root):
+        text = read_text(path)
+        if text is None:
+            continue
+
+        rel_path = relative_path(path, root)
+
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            if needle not in line.lower():
+                continue
+
+            estimated_hours = (line_number % 7) + 1
+            findings.append(
+                Finding(
+                    file_path=rel_path,
+                    line_number=line_number,
+                    description=line.strip(),
+                    estimated_hours=estimated_hours,
+                )
+            )
+
+    return sorted(
+        findings,
+        key=lambda item: (
+            -item.estimated_hours,
+            item.file_path.lower(),
+            item.line_number,
+        ),
+    )
+
+
+def escape_markdown_cell(value: object) -> str:
+    text = str(value)
+    text = text.replace("\\", "\\\\")
+    text = text.replace("|", "\\|")
+    text = text.replace("\n", " ")
+    return text
+
+
+def build_summary(findings: list[Finding]) -> list[str]:
+    total_count = len(findings)
+    total_hours = sum(item.estimated_hours for item in findings)
+    file_count = len({item.file_path for item in findings})
+
+    lines = [
+        "## Summary",
+        "",
+        "| Metric | Value |",
+        "| --- | ---: |",
+        f"| Total TODO entries | {total_count} |",
+        f"| Files affected | {file_count} |",
+        f"| Estimated total hours | {total_hours} |",
+        "",
+    ]
+
+    by_hour: dict[int, int] = {}
+    for item in findings:
+        by_hour[item.estimated_hours] = by_hour.get(item.estimated_hours, 0) + 1
+
+    lines.extend([
+        "## Distribution by estimated hours",
+        "",
+        "| Hours | Count |",
+        "| ---: | ---: |",
+    ])
+
+    for hour in sorted(by_hour, reverse=True):
+        lines.append(f"| {hour} | {by_hour[hour]} |")
+
+    lines.append("")
+    return lines
+
+
+def build_detail_table(findings: list[Finding]) -> list[str]:
+    lines = [
+        "## Entries",
+        "",
+        "| File | Line | Description | Est. Hours |",
+        "| --- | ---: | --- | ---: |",
+    ]
+
+    for item in findings:
+        lines.append(
+            "| "
+            + escape_markdown_cell(item.file_path)
+            + " | "
+            + str(item.line_number)
+            + " | "
+            + escape_markdown_cell(item.description)
+            + " | "
+            + str(item.estimated_hours)
+            + " |"
+        )
+
+    lines.append("")
+    return lines
+
+
+def build_report(findings: list[Finding]) -> str:
+    lines = [
+        f"# {KEYWORD} Audit Report",
+        "",
+        f"Auto-generated by `tools/generate_todo_audit.py`.",
+        "",
+        "Scan rules:",
+        "",
+        f"- Keyword: `{KEYWORD}`, case-insensitive.",
+        "- Scan: code and config files with recognized extensions.",
+        "- Excluded dirs: `.git`, `node_modules`, `target`, etc.",
+        "- Estimate formula: `(line_number % 7) + 1` hours.",
+        "- Sorted by estimated hours descending.",
+        "",
+    ]
+
+    lines.extend(build_summary(findings))
+    lines.extend(build_detail_table(findings))
+
+    if not findings:
+        lines.append(f"No `{KEYWORD}` entries found.")
+
+    return "\n".join(lines)
+
+
+def write_report(root: Path, report: str) -> Path:
+    report_path = root / REPORT_NAME
+    report_path.write_text(report, encoding="utf-8", newline="\n")
+    return report_path
+
+
+def main() -> int:
+    root = repo_root()
+    findings = collect_findings(root)
+    report = build_report(findings)
+    report_path = write_report(root, report)
+
+    print(f"Generated {relative_path(report_path, root)}")
+    print(f"Findings: {len(findings)}")
+    print(f"Estimated hours: {sum(item.estimated_hours for item in findings)}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
