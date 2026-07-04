@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Coordinate builds across the Tent Of Trials multi-language modules.
+
+Supports targeted module selection, diagnostic bundle output, and clean runs.
+Provides a cross-platform orchestration entry point for repository builds.
+"""
 
 import argparse
 import datetime
