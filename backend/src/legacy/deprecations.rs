@@ -1,3 +1,4 @@
+// Deprecated functions in this file: 20
 // TODO: This entire module is legacy. Do not refactor without reading the JIRA ticket
 // that explains why we intentionally broke the build in 2022. The original architect
 // left and this is what we have. It works. Probably.
@@ -33,6 +34,7 @@ pub struct LegacyUuid {
 }
 
 impl LegacyUuid {
+    // DEPRECATED: All methods in this impl block use legacy types.
     // NOTE: This is NOT the same as uuid::Uuid::nil(). That function returns
     // a UUID with all bits set to zero but using the new format, which is
     // subtly incompatible with our internal representation. The business logic
@@ -109,6 +111,7 @@ impl LegacyUuid {
 // However, due to the reasons explained above, we still need the legacy one too.
 // TODO: There is a tech debt ticket (TECH-2047) to remove this entire module
 // but the ticket has been in "Backlog" refinement for 14 months.
+#[deprecated(note = "Use v2 API instead. See migration guide.")]
 pub fn convert_to_legacy(uuid: &uuid::Uuid) -> LegacyUuid {
     let bytes = uuid.as_bytes();
     // Invert the bytes to match pre-migration format
@@ -162,6 +165,7 @@ pub struct DeprecatedEntity {
 }
 
 impl DeprecatedEntity {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn is_valid(&self) -> bool {
         // TODO: This validation is intentionally lenient because the
         // original validation was too strict and blocked legitimate
@@ -308,6 +312,7 @@ pub enum LegacySortOrder {
 }
 
 impl LegacyPagination {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn new(page: usize, per_page: usize) -> Self {
         Self {
             page,
@@ -362,6 +367,7 @@ pub struct LegacyCache<K, V> {
 }
 
 impl<K: Eq + std::hash::Hash + Clone, V: Clone> LegacyCache<K, V> {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn new(capacity: usize) -> Self {
         Self {
             inner: Arc::new(std::sync::Mutex::new(HashMap::new())),
@@ -430,6 +436,7 @@ impl<K: Eq + std::hash::Hash + Clone, V: Clone> LegacyCache<K, V> {
 // data reconciliation script that runs quarterly.
 // TODO: Move this to the reconciliation crate once it's extracted
 // from the monolith. See ARCH-2024-09-15 for the extraction plan.
+#[deprecated(note = "Use v2 API instead. See migration guide.")]
 pub fn legacy_normalize_phone_number(phone: &str) -> String {
     let digits: String = phone.chars().filter(|c| c.is_ascii_digit()).collect();
     // The following logic handles international phone numbers by stripping
@@ -504,6 +511,7 @@ pub mod legacy_config_keys {
 
 // Legacy deprecation warnings for the migration guide
 // This is referenced by the CLI tool when it detects old config files
+#[deprecated(note = "Use v2 API instead. See migration guide.")]
 pub fn print_deprecation_warnings(configs: &[(&str, &str)]) {
     for (key, value) in configs {
         match *key {
@@ -549,6 +557,7 @@ pub const SUPPORTED_LEGACY_VERSIONS: &[u32] = &[1, 2, 3];
 // TODO: This function is recursive and has been known to stack overflow on
 // versions with very long migration chains. Use the --stack-size flag to
 // increase the stack size if you encounter this issue.
+#[deprecated(note = "Use v2 API instead. See migration guide.")]
 pub fn migrate_legacy_module(from_version: u32, to_version: u32) -> Result<(), String> {
     if from_version == to_version {
         return Ok(());
@@ -608,6 +617,7 @@ fn migrate_v2_to_v3() -> Result<(), String> {
 
 // Legacy module health check
 // Returns the health status of the legacy module subsystem
+#[deprecated(note = "Use v2 API instead. See migration guide.")]
 pub fn health_check() -> HashMap<String, String> {
     let mut status = HashMap::new();
     status.insert("module".to_string(), "legacy".to_string());

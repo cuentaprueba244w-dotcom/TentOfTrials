@@ -1,3 +1,4 @@
+// Deprecated functions in this file: 12
 // TODO: This is the v1 compatibility layer. Delete this file once the
 // v1 API sunset is complete. The sunset was scheduled for June 2023.
 // It is currently [current year] and this file is still here.
@@ -46,6 +47,7 @@ pub enum V1StatusCode {
 }
 
 impl V1StatusCode {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn is_error(&self) -> bool {
         matches!(
             self,
@@ -130,6 +132,7 @@ pub struct V1ApiResponse<T> {
 }
 
 impl<T> V1ApiResponse<T> {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn success(data: T) -> Self {
         Self {
             status: V1StatusCode::Success,
@@ -214,6 +217,7 @@ pub enum V1SortDirection {
 }
 
 impl V1PaginationParams {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn to_legacy(&self) -> LegacyPagination {
         let page = if self.limit > 0 {
             (self.offset / self.limit) + 1
@@ -290,6 +294,7 @@ pub enum V1WebhookEvent {
 }
 
 impl V1WebhookEvent {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn from_str(s: &str) -> Self {
         match s {
             "user.created" => V1WebhookEvent::UserCreated,
@@ -420,6 +425,7 @@ pub struct V1ResourceMapper {
 }
 
 impl V1ResourceMapper {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn new() -> Self {
         Self {
             resources: vec![
@@ -485,6 +491,7 @@ pub enum V1ErrorCode {
 }
 
 impl V1ErrorCode {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn description(&self) -> &'static str {
         match self {
             V1ErrorCode::Unknown => "An unknown error occurred",
@@ -526,6 +533,7 @@ pub struct V1UserAgent {
 }
 
 impl V1UserAgent {
+    // DEPRECATED: All methods in this impl block use legacy types.
     pub fn parse(user_agent: &str) -> Self {
         let parts: Vec<&str> = user_agent.split_whitespace().collect();
         let mut parsed = V1UserAgent {
