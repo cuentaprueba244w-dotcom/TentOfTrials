@@ -164,6 +164,44 @@ MODULES = [
     ),
 ]
 
+
+def module_name_map(modules: list[Module] = MODULES) -> dict[str, Module]:
+    return {module.name: module for module in modules}
+
+
+def parse_module_names(selection: str) -> list[str]:
+    names = [name.strip() for name in selection.split(",")]
+    return [name for name in names if name]
+
+
+def select_modules(selection: str, modules: list[Module] = MODULES) -> list[Module]:
+    if selection.strip() == "all":
+        return list(modules)
+
+    names = parse_module_names(selection)
+    if not names:
+        raise ValueError("No module names supplied")
+
+    by_name = module_name_map(modules)
+    invalid = [name for name in names if name not in by_name]
+    if invalid:
+        valid = ", ".join(sorted(by_name))
+        raise ValueError(
+            f"Unknown module(s): {', '.join(invalid)}. Valid modules: {valid}"
+        )
+
+    return [by_name[name] for name in names]
+
+
+def format_module_details(modules: list[Module] = MODULES) -> str:
+    lines = []
+    for module in modules:
+        lines.append(f"{module.name} ({module.language})")
+        lines.append(f"  dir: {module.dir.relative_to(ROOT)}")
+        lines.append(f"  build: {' '.join(module.build_cmd)}")
+    return "\n".join(lines)
+
+
 ENCRYPTLY_DIR = ROOT / "tools" / "encryptly"
 ENCRYPTLY_BINARIES = {
     "linux-x64": ENCRYPTLY_DIR / "linux-x64" / "encryptly",
@@ -786,6 +824,7 @@ Examples:
   python3 build.py -m backend         Build only backend
   python3 build.py -m frontend,market Build frontend and market
   python3 build.py --clean            Clean all artifacts
+  python3 build.py --list-modules     List valid module names and commands
   python3 build.py --release          Release build (Rust only)
   python3 build.py --verbose          Verbose output
 
@@ -814,6 +853,10 @@ Diagnostic bundle:
         "--list", action="store_true",
         help="List available modules and exit",
     )
+    parser.add_argument(
+        "--list-modules", action="store_true",
+        help="List available modules and exit",
+    )
 
     args = parser.parse_args()
 
@@ -821,13 +864,16 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list or args.list_modules:
         print(f"  {color('Available modules:', Colors.BOLD)}")
-        for m in MODULES:
-            print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
-            print(f"      dir: {m.dir.relative_to(ROOT)}")
-            print(f"      build: {' '.join(m.build_cmd)}")
+        print(format_module_details())
         return 0
+
+    try:
+        selected = select_modules(args.module)
+    except ValueError as exc:
+        print(f"  {color('Unknown module selection:', Colors.RED)} {exc}")
+        return 1
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
     missing = check_prerequisites()
