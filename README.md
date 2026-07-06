@@ -82,8 +82,11 @@ sudo apt install -y build-essential curl ca-certificates gnupg pkg-config libssl
 python3 build.py              # Build all modules
 python3 build.py --clean      # Clean all artifacts
 python3 build.py --module backend,frontend  # Build specific modules
+python3 build.py --list-modules  # Show valid module names and commands
 python3 build.py --release    # Release mode (Rust only)
 ```
+
+Module selections are comma-separated and validated before build or clean commands run.
 
 ### Build diagnostics
 
