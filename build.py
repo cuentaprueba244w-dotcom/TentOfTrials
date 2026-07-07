@@ -805,10 +805,16 @@ def validate_module_names(
     """Validate module names against the MODULES registry.
 
     Returns (selected_modules, invalid_names).
+    Selected modules preserve the order of the requested names.
     """
-    valid_names = {m.name for m in modules}
-    selected = [m for m in modules if m.name in names]
-    invalid = [n for n in names if n not in valid_names]
+    name_to_module = {m.name: m for m in modules}
+    selected = []
+    invalid = []
+    for n in names:
+        if n in name_to_module:
+            selected.append(name_to_module[n])
+        else:
+            invalid.append(n)
     return selected, invalid
 
 
