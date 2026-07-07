@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Build orchestrator for the Tent of Trials multi-language monorepo.
+"""
 
 import argparse
 import datetime
