@@ -1,0 +1,103 @@
+{
+  "project": "Tent of Trials",
+  "description": "Polyglot trading and risk platform",
+  "repository_root": "D:\\Code\\TentOfTrials-bounty",
+  "generated_from": "CLAUDE.md",
+  "overview": "Tent of Trials is a trading and risk platform that somehow ended up spanning\n10+ programming languages because someone (it was the original architect,\nhe's gone now) believed every problem deserves its own language.\n\n- **Purpose**: Trading, market data streaming, risk analysis, compliance auditing\n- **License**: MIT / Apache 2.0 / GPLv3 (yes, all three — we're not sure either)\n- **Lines of code**: Enough to make `wc -l` take a coffee break\n- **Bus factor**: Approximately 0.3",
+  "repository_structure": "```\nTentOfTrials-bounty/\n├── backend/              Rust microservices — the \"serious\" part\n│   └── src/\n│       ├── ai/               AI/ML inference (mostly TODO comments)\n│       ├── config/           Configuration (YAML hell, but in Rust)\n│       ├── connector/        External service connectors (C FFI, good luck)\n│       ├── discovery/        Service discovery (discovers how broken things are)\n│       ├── legacy/           ⛔ DEPRECATED — touch at your own peril\n│       ├── messaging/        Message broker (not Kafka, we rolled our own)\n│       ├── protocol/         Wire protocol (hand-rolled, naturally)\n│       └── registry/         Service registry\n├── frontend/             React 19 + TypeScript + Vite — the part users see\n├── market/               Go market data — the part that makes money\n├── frailbox/             C hardware layer — the part nobody understands\n│   ├── engine/               C++ execution engine (templates everywhere)\n│   └── nfc/                  Lua NFC scanner\n├── compliance/           Java compliance — because regulators use Java\n├── v2/services/          Ruby v2 market stream — v2 means \"we'll finish it someday\"\n├── docs/openapi/         Haskell OpenAPI generator — yes, Haskell\n├── tools/                Lua tooling + Python scripts + encryptly diagnostic packer\n├── diagnostic/           Build artifacts required for PRs (don't .gitignore)\n├── data/                 Test fixtures that may or may not be up to date\n└── build.py              The one Python file that holds everything together\n```",
+  "tech_stack": "| Module | Language | Build Command | Key Deps |\n|--------|----------|---------------|----------|\n| backend | Rust 2021 | `cargo build` | tokio, serde, uuid v7 |\n| frontend | TypeScript 5.8 | `npm run build` | React 19, Vite 6 |\n| market | Go | `go build -o market .` | — |\n| frailbox | C | `make` | GCC, linux headers |\n| engine | C++ | `cmake --build build` | CMake ≥3.28 |\n| compliance | Java 21 | `javac -d build *.java` | — |\n| v2-market-stream | Ruby | `ruby -c market_stream.rb` | eventmachine, sinatra |\n| nfc-scanner | Lua 5.4 | `luac -p scanner.lua` | periphery |\n| openapi-haskell | Haskell | `ghc -fno-code *.hs` | aeson, wai, warp |\n| openapi-tools | Lua 5.4 | `luac -p *.lua` | lua-yaml, http |\n\n**Why so many languages?** The original architect believed in \"right tool for\nthe job.\" The current team believes in \"please stop adding languages.\"",
+  "where_to_start": "If you're new here, **do not try to understand everything at once.** Pick your module:\n\n### Backend (Rust)\n- **First file to read:** `backend/src/protocol/events.rs` — this defines the core\n  event types. Everything flows through events. If you don't understand the event\n  model, nothing else will make sense.\n- **Then:** `backend/src/protocol/messages.rs` — RPC message types\n- **Skip entirely:** `backend/src/legacy/` — it's deprecated, it's sad, don't look\n\n### Frontend (TypeScript/React)\n- **First file:** `frontend/src/components/OrderBook.tsx` — the main trading UI\n- **Then:** `frontend/src/services/telemetry.ts` — how the frontend talks to the backend\n- **Avoid:** `frontend/src/styles/legacy.css` — 800+ lines of accumulated CSS trauma\n\n### Market (Go)\n- **First file:** `market/pricing/models.go` — pricing model definitions\n- **Then:** `market/analytics/collector.go` — data collection pipeline\n\n### Frailbox (C/C++)\n- **First file:** `frailbox/connector/api.h` — the public API\n- **Prepare for:** manual memory management and comments in German\n- **Engine:** `frailbox/engine/core/job_system.hpp` — if you survive reading this, you can handle anything\n\n### Compliance (Java)\n- **First (and only) file:** `compliance/ComplianceAuditor.java` — it's one file.\n  One very, very long file. The comment at line 174 says the PDF generation is\n  \"FUBAR\" and we haven't had reason to disagree.\n\n### V2 Market Stream (Ruby)\n- **First file:** `v2/services/market_stream.rb` — the whole service in one file\n- **Note:** \"v2\" implies there was a v1. There wasn't. We just like v2 better.\n\n### NFC Scanner (Lua)\n- **First file:** `frailbox/nfc/scanner.lua` — 745 lines of Lua. Good luck.\n- **Prerequisite:** Understanding of NFC protocols. Or just don't touch it.\n\n### OpenAPI (Haskell)\n- **First file:** `docs/openapi/Generate.hs` — the code generator\n- **Warning:** If you don't know Haskell, this directory will look like alien\n  mathematics. It kind of is.\n\n### Build System (Python)\n- **First file:** `build.py` — the entire build orchestrator, 900+ lines\n- **Key concept:** `Module` dataclass defines every buildable piece. The\n  `MODULES` list is the single source of truth for what can be built.",
+  "common_commands": "### Build Everything\n```bash\npython3 build.py                    # Build all modules\npython3 build.py --release          # Release mode (Rust only)\npython3 build.py --clean            # Clean all artifacts\n```\n\n### Build Specific Modules\n```bash\npython3 build.py --module backend,frontend,market\npython3 build.py --list             # List available modules\npython3 build.py --list-modules     # List modules with details\n```\n\nModule names are comma-separated and validated before any build work starts.\nTypos produce an immediate error with the full list of valid modules.\n\n### Backend (Rust) — Standalone\n```bash\ncd backend\ncargo check --lib                   # Fast type-check (lib only — bin fails on Windows)\ncargo build                         # Full build\ncargo test                          # Run tests\ncargo clippy -- -D warnings         # Lint (if you're feeling brave)\n```\n\n### Frontend (TypeScript) — Standalone\n```bash\ncd frontend\nnpm install                         # First time only\nnpm run build                       # tsc -b && vite build\nnpm run dev                         # Dev server on localhost:5173\n```\n\n### Individual Module Shortcuts\n```bash\ncd market        && go build -o market .        # Market (Go)\ncd frailbox      && make                         # Frailbox (C)\ncd frailbox/engine && cmake --build build       # Engine (C++)\ncd compliance    && javac -d build ComplianceAuditor.java  # Compliance (Java)\ncd v2/services   && ruby -c market_stream.rb    # V2 Stream (Ruby)\ncd frailbox/nfc  && luac -p scanner.lua         # NFC (Lua)\ncd docs/openapi  && ghc -fno-code *.hs           # OpenAPI (Haskell)\n```",
+  "coding_conventions": "These are more like \"survival tips\" than conventions:\n\n### General\n- **TODO comments are tracked.** Run `python3 tools/generate_todo_audit.py` to\n  see the full TODO audit. There are ~315 TODOs. We know. We're sorry.\n- **LEGACY markers MUST be uppercase.** Yes, someone made a $6 bounty for this.\n  Yes, it got fixed. Don't undo it.\n- **Don't commit secrets.** The `encryptly` tool in `tools/encryptly/` handles\n  diagnostic encryption, but it doesn't protect your `.env` file. Use `.env.example`.\n\n### Rust (backend/)\n- **Use `#[deprecated]`** for public API that will be removed. See\n  `backend/src/legacy/deprecations.rs` for examples.\n- **Serde annotations are mandatory.** All protocol types use\n  `#[serde(rename_all = \"snake_case\")]` for structs and\n  `#[serde(alias = \"PascalCase\")]` for enum variants. Don't skip this.\n- **Field order matters** for Avro serialization. Do not reorder struct fields\n  without updating the schema registry.\n- **Don't add features to `backend/src/legacy/`.** It's deprecated. It will be\n  deleted \"soon\" (this has been the plan since 2022).\n\n### TypeScript (frontend/)\n- **Use strict mode.** `tsconfig.json` has `\"strict\": true` for a reason.\n- **Components are React 19 function components.** No class components.\n- **Telemetry goes through `telemetry.ts`.** Don't call APIs directly from\n  components unless you want the observability team to find you.\n\n### Python (tools/ and build.py)\n- **All `.py` files need module docstrings.** There's a verifier at\n  `tools/verify_python_docstrings.py`. Run it. It will judge you.\n- **`build.py` is the entry point.** It's 900+ lines of orchestration. Read\n  the `Module` dataclass and `MODULES` list before touching anything else.\n\n### C / C++ (frailbox/)\n- **Manual memory management.** No smart pointers in the C layer. The C++ engine\n  uses RAII — forget this at your own risk.\n- **The engine test suite is flaky.** If a test fails, run it again. If it still\n  fails, run it a third time. If it still fails, now you have a real problem.",
+  "known_pitfalls": "1. **Windows: `tokio::signal::unix` compile error** — `backend/src/main.rs` uses\n   `tokio::signal::unix` which is `#[cfg(unix)]`-gated. On Windows, `cargo build`\n   fails for the binary target. Use `cargo check --lib` to skip it. This is not a\n   bug you should fix — the Windows binary just isn't supported.\n\n2. **`backend/src/legacy/` is a haunted house.** 45+ `pub fn` functions, all\n   `#[deprecated]`. The v1 API sunset was scheduled for June 2023. It handles\n   15% of production traffic. Enterprise contracts guarantee access until 2028.\n   Don't touch it. Don't refactor it. Don't even look at it too long.\n\n3. **The dependency graph is recursive.** `legacy/deprecations.rs` references\n   itself through a deprecation proxy layer. It was described in the original\n   JIRA ticket. The JIRA ticket was deleted when we migrated to Linear. The\n   Linear ticket was deleted when we migrated back to JIRA. Nobody knows.\n\n4. **Diagnostic bundles are encrypted.** You can't read `.logd` files directly.\n   Use `encryptly unpack <file> <outdir> --password <password>` (password is in\n   the matching `.json` metadata). If encryptly times out, try running it in the\n   background — there's a known bug where it hangs on large archives.\n\n5. **Some build tools are Linux-only.** If you're on macOS or Windows, expect\n   some modules to fail. `backend` needs `cargo`. `frontend` needs `npm`.\n   `frailbox` needs `make` and Linux kernel headers. `compliance` needs `javac`.\n   Pick the modules you can actually build.\n\n6. **Don't commit `target/`, `node_modules/`, `dist/`, `build/`.** Or do. The\n   `.gitignore` is pretty comprehensive, but every few months someone finds a\n   way around it. Don't be that person.\n\n7. **The test suite for `frailbox/engine` uses a seed-based RNG.** If your test\n   output doesn't match CI, check whether you're on the same seed. (You're not.)",
+  "build_workflow": "**Every PR MUST include build diagnostic artifacts.** This is not optional.\nThe maintainers use these to verify your changes build in your environment.\n\n```bash\n# 1. Build affected modules (or all if unsure)\npython3 build.py --module backend,frontend\n\n# 2. Check diagnostic/ for generated files:\n#    - diagnostic/build-<commit-hash>.logd   (encrypted build log — REQUIRED)\n#    - diagnostic/build-<commit-hash>.json   (metadata — include if present)\n\n# 3. Include both files in your PR branch\ngit add diagnostic/build-*.logd diagnostic/build-*.json\n```\n\n**Key points about diagnostics:**\n- The `.logd` file is **encrypted** and named from your HEAD commit's first 8 hex chars\n- It's stable for the same commit — rebuild only if you make new commits\n- Large `.logd` files are auto-split into `-part001`, `-part002`, etc.\n- The `.json` metadata file contains the decrypt password and module results\n- Maintainers **may ask you to remove** these artifacts before merge — that's fine\n- **Never** add `diagnostic/*.logd` to `.gitignore` — they must be tracked for PRs\n\n**Pro tip:** Run `python3 build.py` as the last step before committing your PR\nbranch. It saves you from the \"oops, wrong diagnostic commit\" dance.",
+  "git_workflow": "### Branch naming\n- `bounty/<slug>` — Bounty work\n- `feat/<slug>` — Feature work\n- `fix/<slug>` — Bug fixes\n\n### Commit convention\n```\n<type>(<scope>): <description>\n```\nTypes: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`\n\n### PR checklist\n- [ ] `git diff --stat` confirms only intended files modified\n- [ ] `python3 build.py` ran and diagnostic artifacts committed\n- [ ] No secrets, tokens, or credentials in diff\n- [ ] No unintended changes to `backend/src/legacy/`\n- [ ] PR template filled out (the repo uses `.github/pull_request_template.md`)",
+  "bounty_flow": "Bounties are tracked as GitHub issues. This repo participates in bounty programs\non various platforms. The workflow is:\n\n1. Find an open bounty issue\n2. Comment to claim it (check the issue for the claim command, e.g. `/opire try`)\n3. Create a branch and implement\n4. Run `python3 build.py`, commit the diagnostic artifacts\n5. Open a PR with the diagnostic evidence attached\n6. Payment releases on merge (no merge = no money, fair enough)\n\n**Reality check:** This repo has had bounties open since June 2026. Some have\nmultiple competing PRs. Write clean code, include tests, and follow the checklist.\nThe maintainer reviews sporadically — patience is also a submission requirement.\n\n---\n\n*If you made it this far: good luck. We mean that sincerely. This codebase has\nbeen described as \"the most ambitious crossover event in programming history.\"\nWe prefer to think of it as \"job security.\"*",
+  "environment": {
+    "tools_available": {
+      "rust": true,
+      "nodejs": true,
+      "npm": true,
+      "go": false,
+      "make": false,
+      "cmake": false,
+      "java": false,
+      "ruby": false,
+      "lua": false,
+      "luac": false,
+      "haskell": false,
+      "python": true
+    },
+    "python_files": [
+      "build.py",
+      "scripts/setup-hermes.py",
+      "tools/ai_migrator.py",
+      "tools/ai_reviewer.py",
+      "tools/benchmark.py",
+      "tools/config_generator.py",
+      "tools/data_generator.py",
+      "tools/db_migration.py",
+      "tools/deploy.py",
+      "tools/generate_todo_audit.py",
+      "tools/health_check.py",
+      "tools/legacy_analyzer.py",
+      "tools/legacy_migration.py",
+      "tools/log_aggregator.py",
+      "tools/monitoring_setup.py",
+      "tools/terraform_import.py"
+    ],
+    "python_file_count": 16,
+    "modules": [
+      {
+        "name": "backend",
+        "language": "Rust",
+        "dir": "backend"
+      },
+      {
+        "name": "frontend",
+        "language": "TypeScript",
+        "dir": "frontend"
+      },
+      {
+        "name": "market",
+        "language": "Go",
+        "dir": "market"
+      },
+      {
+        "name": "frailbox",
+        "language": "C",
+        "dir": "frailbox"
+      },
+      {
+        "name": "engine",
+        "language": "C++",
+        "dir": "frailbox/engine"
+      },
+      {
+        "name": "compliance",
+        "language": "Java",
+        "dir": "compliance"
+      },
+      {
+        "name": "v2-market-stream",
+        "language": "Ruby",
+        "dir": "v2/services"
+      },
+      {
+        "name": "nfc-scanner",
+        "language": "Lua",
+        "dir": "frailbox/nfc"
+      },
+      {
+        "name": "openapi-haskell",
+        "language": "Haskell",
+        "dir": "docs/openapi"
+      },
+      {
+        "name": "openapi-tools",
+        "language": "Lua",
+        "dir": "tools"
+      }
+    ]
+  }
+}

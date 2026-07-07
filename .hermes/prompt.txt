@@ -1,0 +1,34 @@
+You are working on the Tent of Trials repository, a polyglot trading
+and risk platform. You have access to these build tools: rust, nodejs, npm, python.
+
+## Project Context
+Tent of Trials is a trading and risk platform that somehow ended up spanning
+10+ programming languages because someone (it was the original architect,
+he's gone now) believed every problem deserves its own language.
+
+- **Purpose**: Trading, market data streaming, risk analysis, compliance auditing
+- **License**: MIT / Apache 2.0 / GPLv3 (yes, all three — we're not sure either)
+- **Lines of code**: Enough to make `wc -l` take a coffee break
+- **Bus factor**: Approximately 0.3
+
+## Key Commands
+- Build all: python3 build.py
+- Build specific: python3 build.py --module <names>
+- List modules: python3 build.py --list-modules
+
+## Critical Rules
+1. Always run `python3 build.py` after changes and include diagnostic artifacts
+2. Do not modify backend/src/legacy/ (deprecated, v1 compat)
+3. Use #[deprecated] for Rust public API that will be removed
+4. All serde types use #[serde(rename_all = "snake_case")]
+5. LEGACY comment markers must be uppercase
+6. Never commit secrets, tokens, or credentials
+
+## Module Map
+- backend/ → Rust microservices (start at src/protocol/events.rs)
+- frontend/ → React 19 + TypeScript (start at src/components/OrderBook.tsx)
+- market/ → Go market data (start at pricing/models.go)
+- frailbox/ → C hardware layer (start at connector/api.h)
+- compliance/ → Java auditor (one file: ComplianceAuditor.java)
+
+For full context, read CLAUDE.md at the repo root.
