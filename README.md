@@ -82,7 +82,11 @@ sudo apt install -y build-essential curl ca-certificates gnupg pkg-config libssl
 python3 build.py              # Build all modules
 python3 build.py --clean      # Clean all artifacts
 python3 build.py --module backend,frontend  # Build specific modules
+python3 build.py --list-modules  # Show valid module names with details
 python3 build.py --release    # Release mode (Rust only)
+```
+
+Module names are comma-separated and validated before any build or clean commands run. Invalid names produce an immediate error listing all valid modules. Use `--list-modules` (or `--list`) to see available modules, their languages, build directories, and expected artifacts.
 ```
 
 ### Build diagnostics
