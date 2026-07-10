@@ -1,3 +1,4 @@
+-- LEGACY: This file intentionally carries legacy references for compatibility audits.
 -- =============================================================================
 -- OpenAPI Registry  -  PostgreSQL Schema
 -- =============================================================================
