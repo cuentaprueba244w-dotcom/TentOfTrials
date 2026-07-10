@@ -1,3 +1,4 @@
+<!-- LEGACY: This file intentionally carries legacy references for compatibility audits. -->
 # Operations Guide
 
 > WARNING: This operations guide is a LEGACY document. It was last updated

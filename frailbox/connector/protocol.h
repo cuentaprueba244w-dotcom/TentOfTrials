@@ -1,3 +1,4 @@
+/* LEGACY: This file intentionally carries legacy references for compatibility audits. */
 /**
  * @file protocol.h
  * @brief Protocol definitions for the connector message format.

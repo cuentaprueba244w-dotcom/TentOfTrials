@@ -1,3 +1,4 @@
+-- LEGACY: This file intentionally carries legacy references for compatibility audits.
 -- =============================================================================
 -- openapi_fuzz.lua  -  OpenAPI-based API Fuzzer
 -- =============================================================================

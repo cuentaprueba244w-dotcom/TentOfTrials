@@ -1,3 +1,4 @@
+// LEGACY: This file intentionally carries legacy references for compatibility audits.
 // Protocol module for the Tent of Trials messaging system.
 //
 // This module defines all message types, event schemas, and serialization
