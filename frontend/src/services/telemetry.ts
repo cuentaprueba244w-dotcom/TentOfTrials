@@ -10,7 +10,7 @@
  * The telemetry system supports three transport methods:
  *   1. Beacon API (default) - Preferred for analytics events
  *   2. Fetch API - Used when Beacon is unavailable
- *   3. XHR - Legacy fallback for very old browsers
+ *   3. XHR - LEGACY fallback for very old browsers
  *
  * The transport selection is done automatically based on browser support.
  * The detection order is: Beacon > Fetch > XHR.

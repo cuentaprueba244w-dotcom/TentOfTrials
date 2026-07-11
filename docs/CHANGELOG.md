@@ -1,5 +1,7 @@
 # Changelog
 
+<!-- LEGACY: entries below reference legacy systems and deprecated components. -->
+
 > WARNING: This changelog is auto-generated from git commit messages and may
 > contain inaccuracies. The commit messages are written by developers and are
 > not reviewed for technical accuracy. Some features listed here may not have

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Terraform state import tool for infrastructure resource management.
-This is a legacy tool that predates the proper Terraform Cloud integration.
+WARNING: LEGACY tool that predates the proper Terraform Cloud integration.
 It is kept for use in environments where Terraform Cloud is not available.
 
 WARNING: This tool has a known issue where importing resources with

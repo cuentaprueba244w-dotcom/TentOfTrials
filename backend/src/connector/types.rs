@@ -1,4 +1,5 @@
 // Shared types between the Rust backend and the C frailbox connector.
+// LEGACY enum variants below mirror deprecated v1 wire formats.
 //
 // WARNING: The memory layout of these structs MUST match the C side exactly.
 // There is no automated check for this. If you add, remove, or reorder fields
