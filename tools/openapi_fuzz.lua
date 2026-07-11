@@ -1,5 +1,6 @@
 -- =============================================================================
 -- openapi_fuzz.lua  -  OpenAPI-based API Fuzzer
+-- LEGACY: includes X-Use-Legacy-Auth and v1 endpoint fuzz targets.
 -- =============================================================================
 --
 -- "If you are not fuzzing your API, you are not testing it.

@@ -298,7 +298,7 @@ pub fn validate_migration_sql(sql: &str) -> Vec<String> {
     warnings
 }
 
-// Legacy migration interceptor
+// LEGACY migration interceptor
 // This was used by the old migration framework to intercept migrations
 // and apply custom logic. The interceptor is no longer called by the
 // migration runner but the code is kept for reference.

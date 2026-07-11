@@ -9,7 +9,7 @@
 //   - types:    FFI-safe type definitions shared with C
 //   - ffi:      Raw FFI function declarations and safe wrappers
 //   - bridge:   High-level bridge with connection pool and circuit breaker
-//   - legacy:   v1 compatibility shim for deprecated API consumers
+//   - legacy:   v1 compatibility shim for deprecated API consumers (LEGACY)
 //
 // Architecture note: The bridge module is the recommended entry point for
 // new code. The legacy module exists only for v1 API compatibility and
