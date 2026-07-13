@@ -164,6 +164,54 @@ MODULES = [
     ),
 ]
 
+
+def parse_module_names(raw: str) -> list[str]:
+    """Split a --module argument into clean, individual module names.
+
+    Splits on commas, strips surrounding whitespace from each piece, and
+    discards empty entries produced by stray or trailing commas
+    (e.g. "frontend, ,market," -> ["frontend", "market"]).
+    Does not special-case "all"; callers handle that sentinel themselves.
+    """
+    if not raw:
+        return []
+    return [chunk.strip() for chunk in raw.split(",") if chunk.strip()]
+
+
+def validate_module_names(
+    names: list[str], modules: list["Module"]
+) -> tuple[list[str], list[str]]:
+    """Classify requested names as (valid, invalid) against known modules.
+
+    Preserves first-seen order and de-duplicates within each list, so
+    ["frontend", "frontend", "bogus"] -> (["frontend"], ["bogus"]).
+    """
+    known = {m.name for m in modules}
+    valid: list[str] = []
+    invalid: list[str] = []
+    seen: set[str] = set()
+    for name in names:
+        if name in seen:
+            continue
+        seen.add(name)
+        (valid if name in known else invalid).append(name)
+    return valid, invalid
+
+
+def resolve_selected_modules(
+    names: list[str], modules: list["Module"]
+) -> list["Module"]:
+    """Map already-validated module names to their Module objects.
+
+    Preserves the order of `names`. Assumes every name is present in
+    `modules` (i.e. `names` came out of validate_module_names as the
+    "valid" list) - unknown names are silently skipped rather than
+    raising, since validation is this function's caller's job.
+    """
+    by_name = {m.name: m for m in modules}
+    return [by_name[name] for name in names if name in by_name]
+
+
 ENCRYPTLY_DIR = ROOT / "tools" / "encryptly"
 ENCRYPTLY_BINARIES = {
     "linux-x64": ENCRYPTLY_DIR / "linux-x64" / "encryptly",
@@ -788,6 +836,7 @@ Examples:
   python3 build.py --clean            Clean all artifacts
   python3 build.py --release          Release build (Rust only)
   python3 build.py --verbose          Verbose output
+  python3 build.py --list-modules     Show module details and exit
 
 Diagnostic bundle:
   python3 build.py
@@ -795,7 +844,7 @@ Diagnostic bundle:
     )
     parser.add_argument(
         "-m", "--module",
-        help="Module(s) to build (comma-separated, or 'all')",
+        help="Module(s) to build (comma-separated, spaces optional, or 'all')",
         default="all",
     )
     parser.add_argument(
@@ -811,8 +860,8 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
-        "--list", action="store_true",
-        help="List available modules and exit",
+        "--list-modules", "--list", dest="list_modules", action="store_true",
+        help="List available modules with details and exit",
     )
 
     args = parser.parse_args()
@@ -821,12 +870,31 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list_modules:
         print(f"  {color('Available modules:', Colors.BOLD)}")
         for m in MODULES:
             print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
             print(f"      dir: {m.dir.relative_to(ROOT)}")
             print(f"      build: {' '.join(m.build_cmd)}")
+            print(f"      clean: {' '.join(m.clean_cmd)}")
+        return 0
+
+    # Validate --module BEFORE any build command runs (prerequisites check,
+    # encryptly diagnostics, or the actual build). An invalid name exits
+    # non-zero immediately and prints the list of valid module names.
+    if args.module == "all":
+        selected = MODULES
+    else:
+        names = parse_module_names(args.module)
+        valid_names, invalid_names = validate_module_names(names, MODULES)
+        if invalid_names:
+            print(f"  {color('✗ Invalid module name(s):', Colors.RED)} {', '.join(invalid_names)}")
+            print(f"    Valid modules: {', '.join(sorted(m.name for m in MODULES))}")
+            return 1
+        selected = resolve_selected_modules(valid_names, MODULES)
+
+    if not selected:
+        print(f"  No modules selected.")
         return 0
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
@@ -840,20 +908,6 @@ Diagnostic bundle:
         print(f"  {color(msg, Colors.GRAY)}")
     else:
         print(f"  {color('✓ All prerequisites found', Colors.GREEN)}")
-    if args.module == "all":
-        selected = MODULES
-    else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
-            return 1
-
-    if not selected:
-        print(f"  No modules selected.")
-        return 0
 
     if args.clean:
         print(f"\n  {color('Cleaning build artifacts...', Colors.YELLOW)}")
