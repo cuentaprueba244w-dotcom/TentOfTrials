@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Multi-language build system for TentOfTrials.
+
+Provides automated build, test, and deployment orchestration across
+backend, frontend, and diagnostic components of the platform.
+"""
 
 import argparse
 import datetime
