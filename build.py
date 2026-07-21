@@ -811,7 +811,7 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
-        "--list", action="store_true",
+        "--list", "--list-modules", action="store_true",
         help="List available modules and exit",
     )
 
