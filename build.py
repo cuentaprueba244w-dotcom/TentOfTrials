@@ -164,6 +164,46 @@ MODULES = [
     ),
 ]
 
+def parse_module_selection(raw: str, known_names: set[str]) -> tuple[list[str], list[str]]:
+    """Parse a comma-separated module selection string.
+
+    Handles optional spaces around commas. Returns (valid_names, invalid_names).
+
+    >>> parse_module_selection("backend,frontend", {"backend", "frontend"})
+    (['backend', 'frontend'], [])
+    >>> parse_module_selection("backend, nope", {"backend"})
+    (['backend'], ['nope'])
+    >>> parse_module_selection("all", {"backend", "frontend"})
+    (['all'], [])
+    """
+    if raw.strip().lower() == "all":
+        return ["all"], []
+    names = [n.strip() for n in raw.split(",") if n.strip()]
+    valid = [n for n in names if n in known_names]
+    invalid = [n for n in names if n not in known_names]
+    return valid, invalid
+
+
+def validate_module_names(names: list[str], modules: list[Module]) -> tuple[list[Module], list[str]]:
+    """Validate module names against the known module list.
+
+    Returns (selected_modules, invalid_names). Fails fast — if any name is
+    invalid, returns an empty module list and the invalid names so the caller
+    can exit with a clear error before starting any build work.
+
+    >>> validate_module_names(["backend"], MODULES)[1]
+    []
+    >>> validate_module_names(["nope"], MODULES)[1]
+    ['nope']
+    """
+    known_names = {m.name for m in modules}
+    valid, invalid = parse_module_selection(",".join(names), known_names)
+    if invalid:
+        return [], invalid
+    selected = [m for m in modules if m.name in valid]
+    return selected, []
+
+
 ENCRYPTLY_DIR = ROOT / "tools" / "encryptly"
 ENCRYPTLY_BINARIES = {
     "linux-x64": ENCRYPTLY_DIR / "linux-x64" / "encryptly",
@@ -811,8 +851,8 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
-        "--list", action="store_true",
-        help="List available modules and exit",
+        "--list-modules", action="store_true",
+        help="List available modules with details and exit",
     )
 
     args = parser.parse_args()
@@ -821,12 +861,16 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list_modules:
         print(f"  {color('Available modules:', Colors.BOLD)}")
         for m in MODULES:
             print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
             print(f"      dir: {m.dir.relative_to(ROOT)}")
             print(f"      build: {' '.join(m.build_cmd)}")
+            print(f"      clean: {' '.join(m.clean_cmd)}")
+            if m.build_dir:
+                print(f"      output: {m.build_dir.relative_to(ROOT)}")
+        print(f"\n  Use: python3 build.py -m {','.join(m.name for m in MODULES[:2])}")
         return 0
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
@@ -843,11 +887,12 @@ Diagnostic bundle:
     if args.module == "all":
         selected = MODULES
     else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
+        selected, invalid = validate_module_names(
+            [n.strip() for n in args.module.split(",") if n.strip()],
+            MODULES,
+        )
+        if invalid:
+            print(f"  {color('✗ Invalid module(s):', Colors.RED)} {', '.join(invalid)}")
             print(f"    Available: {', '.join(m.name for m in MODULES)}")
             return 1
 
