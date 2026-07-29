@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+"""Multi-module build system with diagnostic logging. Builds Rust, TypeScript, Go, C, C++, Java, Ruby, Lua, and Haskell modules with encrypted build artifacts."""
+
+
 ROOT = Path(__file__).resolve().parent
 DIAGNOSTIC_DIR = ROOT / "diagnostic"
 DIAGNOSTIC_CHUNK_SIZE = 40 * 1024 * 1024
