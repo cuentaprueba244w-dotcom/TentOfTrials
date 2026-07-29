@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+"""Multi-module build system with diagnostic logging. Builds Rust, TypeScript, Go, C, C++, Java, Ruby, Lua, and Haskell modules with encrypted build artifacts."""
+
+
 ROOT = Path(__file__).resolve().parent
 DIAGNOSTIC_DIR = ROOT / "diagnostic"
 DIAGNOSTIC_CHUNK_SIZE = 40 * 1024 * 1024
@@ -174,6 +177,44 @@ ENCRYPTLY_BINARIES = {
     "windows-arm64": ENCRYPTLY_DIR / "windows-arm64" / "encryptly.exe",
 }
 LEGACY_ENCRYPTLY_BIN = ENCRYPTLY_DIR / "encryptly"
+
+def parse_module_selection(module_arg: str) -> list[str]:
+    """Parse comma-separated module names with optional whitespace."""
+    if not module_arg or not module_arg.strip():
+        return []
+    return [name.strip() for name in module_arg.split(",") if name.strip()]
+
+
+def validate_module_names(names: list[str], modules: list[Module]) -> tuple[list[Module], list[str]]:
+    """Validate module names against known modules. Returns (valid, invalid)."""
+    valid_names = {m.name for m in modules}
+    invalid = [name for name in names if name not in valid_names]
+    ordered: list[Module] = []
+    seen: set[str] = set()
+    for name in names:
+        if name in valid_names and name not in seen:
+            for m in modules:
+                if m.name == name:
+                    ordered.append(m)
+                    seen.add(name)
+                    break
+    return ordered, invalid
+
+
+def format_module_list(modules: list[Module], detailed: bool = False) -> str:
+    """Format module list for display."""
+    lines = []
+    for m in modules:
+        if detailed:
+            lines.append(f"  {m.name} ({m.language})")
+            lines.append(f"    dir: {m.dir.relative_to(ROOT)}")
+            lines.append(f"    build: {' '.join(m.build_cmd)}")
+            lines.append(f"    clean: {' '.join(m.clean_cmd)}")
+        else:
+            lines.append(f"  - {m.name} ({m.language})")
+    return "\n".join(lines)
+
+
 
 
 def _normalize_arch(machine: str) -> Optional[str]:
@@ -814,6 +855,10 @@ Diagnostic bundle:
         "--list", action="store_true",
         help="List available modules and exit",
     )
+    parser.add_argument(
+        "--list-modules", action="store_true",
+        help="List all available modules with detailed information",
+    )
 
     args = parser.parse_args()
 
@@ -821,12 +866,12 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list or args.list_modules:
+        detailed = args.list_modules
         print(f"  {color('Available modules:', Colors.BOLD)}")
-        for m in MODULES:
-            print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
-            print(f"      dir: {m.dir.relative_to(ROOT)}")
-            print(f"      build: {' '.join(m.build_cmd)}")
+        print(format_module_list(MODULES, detailed=detailed))
+        if not detailed:
+            print(f"\n  Use {color('--list-modules', Colors.CYAN)} for detailed module information.")
         return 0
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
@@ -843,12 +888,12 @@ Diagnostic bundle:
     if args.module == "all":
         selected = MODULES
     else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
+        names = parse_module_selection(args.module)
+        selected, invalid = validate_module_names(names, MODULES)
+        if invalid:
+            print(f"  {color('Error: Invalid module name(s):', Colors.RED)} {', '.join(invalid)}")
+            print(f"  {color('Valid modules:', Colors.BOLD)}")
+            print(format_module_list(MODULES))
             return 1
 
     if not selected:
