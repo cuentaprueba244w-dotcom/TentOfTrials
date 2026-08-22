@@ -1,3 +1,7 @@
+Build and packaging tool for the Tent of Trials platform.
+Assembles distribution artifacts, runs the build pipeline, and produces
+release outputs used by deployment and testing workflows.
+
 #!/usr/bin/env python3
 
 import argparse
