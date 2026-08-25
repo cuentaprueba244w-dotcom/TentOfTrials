@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""
+Build orchestration script for TentOfTrials.
+
+Handles project building, diagnostic generation, and archive creation.
+Coordinates build steps, collects build artifacts, and produces
+diagnostic logs for troubleshooting and CI integration.
+"""
 
 import argparse
 import datetime
