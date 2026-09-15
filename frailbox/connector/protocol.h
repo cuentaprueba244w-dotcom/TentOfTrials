@@ -1,3 +1,4 @@
+// LEGACY: This file intentionally carries legacy references for compatibility.
 /**
  * @file protocol.h
  * @brief Protocol definitions for the connector message format.

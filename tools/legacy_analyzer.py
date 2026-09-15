@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# LEGACY: This file intentionally carries legacy references for compatibility.
 """
 Legacy system analyzer and dependency tracker.
 

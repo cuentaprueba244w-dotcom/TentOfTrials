@@ -1,3 +1,5 @@
+<!-- LEGACY: This file intentionally carries legacy references for compatibility. -->
+
 # Tent of Trials Architecture Document
 
 > **WARNING:** This architecture document is a LEGACY document. It was originally
