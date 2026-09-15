@@ -811,7 +811,7 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
-        "--list", action="store_true",
+        "--list-modules", action="store_true",
         help="List available modules and exit",
     )
 
@@ -821,7 +821,22 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+
+    if args.module == "all":
+        selected = MODULES
+    else:
+        names = [n.strip() for n in args.module.split(",")]
+        selected = [m for m in MODULES if m.name in names]
+        not_found = set(names) - {m.name for m in MODULES}
+        if not_found:
+            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
+            print(f"    Available: {', '.join(m.name for m in MODULES)}")
+            return 1
+    if not selected:
+        print(f"  No modules selected.")
+        return 0
+
+    if args.list_modules:
         print(f"  {color('Available modules:', Colors.BOLD)}")
         for m in MODULES:
             print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
@@ -840,20 +855,7 @@ Diagnostic bundle:
         print(f"  {color(msg, Colors.GRAY)}")
     else:
         print(f"  {color('✓ All prerequisites found', Colors.GREEN)}")
-    if args.module == "all":
-        selected = MODULES
-    else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
-            return 1
 
-    if not selected:
-        print(f"  No modules selected.")
-        return 0
 
     if args.clean:
         print(f"\n  {color('Cleaning build artifacts...', Colors.YELLOW)}")
