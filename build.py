@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+"""
+Tent of Trials - Polyglot Build and Diagnostic Automation Suite.
+
+This module provides a unified orchestrator for configuring, compiling, cleaning,
+and diagnostic benchmarking across all submodules (Rust backend, TypeScript frontend,
+Go market services, C/C++ engines, Java compliance tools, and OpenAPI definitions).
+
+Key Capabilities:
+- Multi-language module build & clean execution
+- Toolchain prerequisite checking (Rust, Node, Go, Make, CMake, Java, Ruby, Lua, Haskell)
+- Deterministic diagnostic logging and chunking into `diagnostic/build-*.logd`
+- Module-level selective targeting and command-line validation
+"""
 
 import argparse
 import datetime
