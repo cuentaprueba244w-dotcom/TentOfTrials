@@ -776,6 +776,27 @@ def print_summary(results: list[tuple[str, bool, float, str, Optional[str]]]):
           f"{color(str(failed) + ' failed', Colors.RED)}, "
           f"{total_time:.1f}s total")
 
+def parse_module_selection(selection_str: str) -> list[str]:
+    """Parse comma-separated module selection string with optional spaces."""
+    if not selection_str or selection_str.strip().lower() == "all":
+        return [m.name for m in MODULES]
+    return [name.strip() for name in selection_str.split(",") if name.strip()]
+
+def validate_module_selection(selected_names: list[str], available_modules: list[Module] = None) -> tuple[list[Module], list[str]]:
+    """Validate selected module names against available modules.
+    Returns (selected_module_objects, invalid_names_list)."""
+    if available_modules is None:
+        available_modules = MODULES
+    valid_map = {m.name: m for m in available_modules}
+    valid_selected = []
+    invalid_names = []
+    for name in selected_names:
+        if name in valid_map:
+            valid_selected.append(valid_map[name])
+        else:
+            invalid_names.append(name)
+    return valid_selected, invalid_names
+
 def main():
     parser = argparse.ArgumentParser(
         description="Tent of Trials  -  Multi-Language Build System",
@@ -785,6 +806,7 @@ Examples:
   python3 build.py                    Build all modules
   python3 build.py -m backend         Build only backend
   python3 build.py -m frontend,market Build frontend and market
+  python3 build.py --list-modules     List available modules with details
   python3 build.py --clean            Clean all artifacts
   python3 build.py --release          Release build (Rust only)
   python3 build.py --verbose          Verbose output
@@ -811,8 +833,8 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
-        "--list", action="store_true",
-        help="List available modules and exit",
+        "--list", "--list-modules", dest="list_modules", action="store_true",
+        help="List available modules with details and exit",
     )
 
     args = parser.parse_args()
@@ -821,12 +843,24 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+    if args.list_modules:
         print(f"  {color('Available modules:', Colors.BOLD)}")
         for m in MODULES:
             print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
             print(f"      dir: {m.dir.relative_to(ROOT)}")
             print(f"      build: {' '.join(m.build_cmd)}")
+        return 0
+
+    # Validate module selection before running any build commands or checks
+    selected_names = parse_module_selection(args.module)
+    selected, invalid_names = validate_module_selection(selected_names)
+    if invalid_names:
+        print(f"  {color('✗ Invalid module(s):', Colors.RED)} {', '.join(invalid_names)}")
+        print(f"    Available: {', '.join(m.name for m in MODULES)}")
+        return 1
+
+    if not selected:
+        print(f"  No modules selected.")
         return 0
 
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
@@ -840,20 +874,6 @@ Diagnostic bundle:
         print(f"  {color(msg, Colors.GRAY)}")
     else:
         print(f"  {color('✓ All prerequisites found', Colors.GREEN)}")
-    if args.module == "all":
-        selected = MODULES
-    else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
-            print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
-            return 1
-
-    if not selected:
-        print(f"  No modules selected.")
-        return 0
 
     if args.clean:
         print(f"\n  {color('Cleaning build artifacts...', Colors.YELLOW)}")
