@@ -1,3 +1,4 @@
+/* LEGACY */
 #ifndef FRAILBOX_ARENA_H
 #define FRAILBOX_ARENA_H
 
