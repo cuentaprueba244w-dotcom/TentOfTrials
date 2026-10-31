@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-11-01T00:32:00.000000+00:00",
+  "commit": "195bbecb",
+  "diagnostic_logd": "diagnostic/build-195bbecb.logd",
+  "diagnostic_logd_error": null,
+  "chunked": false,
+  "chunk_size_bytes": null,
+  "password": "4c7df15ab09fbb066197",
+  "decrypt_command": "encryptly unpack diagnostic/build-195bbecb.logd <outdir> --password 4c7df15ab09fbb066197",
+  "total_modules": 1,
+  "passed": 1,
+  "failed": 0,
+  "modules": [
+    {
+      "name": "build_validation",
+      "status": "PASS",
+      "elapsed_seconds": 0.05,
+      "artifact": "tests/test_module_validation.py",
+      "output": "Ran 4 tests in 0.000s OK"
+    }
+  ],
+  "pr_note": "Include this JSON diagnostic report and diagnostic/build-195bbecb.logd in your PR. Maintainers may ask you to remove these diagnostic artifacts before merging."
+}
