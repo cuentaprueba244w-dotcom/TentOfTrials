@@ -92,7 +92,7 @@ MODULES = [
         name="frontend",
         language="TypeScript",
         dir=ROOT / "frontend",
-        build_cmd=["npm", "run", "build"],
+        build_cmd=["npm.cmd", "run", "build"] if platform.system().lower() == "windows" else ["npm", "run", "build"],
         clean_cmd=["rm", "-rf", "node_modules", "dist"],
         build_dir=ROOT / "frontend" / "dist",
         env={"NODE_ENV": "production"},
@@ -277,7 +277,7 @@ def build_module(
             print(f"       {color('npm install...', Colors.GRAY)}")
             try:
                 install_result = subprocess.run(
-                    ["npm", "install"],
+                    ["npm.cmd", "install"] if platform.system().lower() == "windows" else ["npm", "install"],
                     cwd=str(module.dir),
                     capture_output=not verbose,
                     text=True,
@@ -509,6 +509,12 @@ def generate_logd(
             )
             if logd_path.exists():
                 logd_path.unlink()
+            metadata = {
+                "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "commit": commit_id,
+                "diagnostic_logd_error": "Failed to pack logd",
+            }
+            metadata_path.write_text(json.dumps(metadata, indent=2) + "\\n", encoding="utf-8")
             return False
 
         safe_pw = sr.stdout.strip()
@@ -600,7 +606,20 @@ def print_summary(results: list[tuple[str, bool, float, str, Optional[str]]]):
           f"{color(str(failed) + ' failed', Colors.RED)}, "
           f"{total_time:.1f}s total")
 
+
+def parse_module_selection(selection: str) -> list[str]:
+    """Parse a comma-separated string of modules into a clean list."""
+    if not selection:
+        return []
+    return [name.strip() for name in selection.split(",") if name.strip()]
+
+def validate_modules(names: list[str], available: list[str]) -> tuple[bool, set[str]]:
+    """Validate selected modules against available modules."""
+    not_found = set(names) - set(available)
+    return len(not_found) == 0, not_found
+
 def main():
+
     parser = argparse.ArgumentParser(
         description="Tent of Trials  -  Multi-Language Build System",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -635,7 +654,7 @@ Diagnostic bundle:
         help="Show detailed build output",
     )
     parser.add_argument(
-        "--list", action="store_true",
+        "--list-modules", action="store_true",
         help="List available modules and exit",
     )
 
@@ -645,7 +664,8 @@ Diagnostic bundle:
     print(f"  Working directory: {ROOT}")
     print()
 
-    if args.list:
+
+    if getattr(args, 'list_modules', False) or getattr(args, 'list', False):
         print(f"  {color('Available modules:', Colors.BOLD)}")
         for m in MODULES:
             print(f"    {color(m.name, Colors.CYAN)} ({m.language})")
@@ -656,25 +676,28 @@ Diagnostic bundle:
     print(f"  {color('Checking prerequisites...', Colors.GRAY)}")
     missing = check_prerequisites()
     if missing:
-        print(f"\n  {color('⚠ Some tools missing  -  will try anyway:', Colors.YELLOW)}")
+        print(f"\\n  {color('⚠ Some tools missing  -  will try anyway:', Colors.YELLOW)}")
         for m in missing:
             print(f"    {m}")
-        print(f"  {color('Not all modules will build. That\'s fine.', Colors.GRAY)}")
+        msg = color("Not all modules will build. That's fine.", Colors.GRAY)
+        print(f"  {msg}")
     else:
         print(f"  {color('✓ All prerequisites found', Colors.GREEN)}")
 
     if args.module == "all":
         selected = MODULES
     else:
-        names = [n.strip() for n in args.module.split(",")]
-        selected = [m for m in MODULES if m.name in names]
-        not_found = set(names) - {m.name for m in MODULES}
-        if not_found:
+        names = parse_module_selection(args.module)
+        available_names = [m.name for m in MODULES]
+        is_valid, not_found = validate_modules(names, available_names)
+        
+        if not is_valid:
             print(f"  {color('✗ Unknown modules:', Colors.RED)} {', '.join(not_found)}")
-            print(f"    Available: {', '.join(m.name for m in MODULES)}")
+            print(f"    Available: {', '.join(available_names)}")
             return 1
+        selected = [m for m in MODULES if m.name in names]
 
-    if not selected:
+    
         print(f"  No modules selected.")
         return 0
 
