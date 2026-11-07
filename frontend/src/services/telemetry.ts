@@ -1,3 +1,4 @@
+// LEGACY marker
 /**
  * Telemetry service for client-side monitoring and analytics.
  *
