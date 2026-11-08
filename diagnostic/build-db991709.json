@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-11-08T02:06:52.536440+00:00",
+  "commit": "db991709",
+  "diagnostic_logd": [
+    "diagnostic/build-db991709-part001.logd",
+    "diagnostic/build-db991709-part002.logd"
+  ],
+  "diagnostic_logd_error": null,
+  "message_blocker": null,
+  "chunked": true,
+  "chunk_size_bytes": 41943040,
+  "password": "f73fb6a15265e0e059b9",
+  "decrypt_command": "encryptly unpack diagnostic/build-db991709.logd <outdir> --password f73fb6a15265e0e059b9",
+  "total_modules": 3,
+  "passed": 3,
+  "failed": 0,
+  "modules": [
+    {
+      "name": "v2-market-stream",
+      "status": "PASS",
+      "elapsed_seconds": 0.056,
+      "artifact": null,
+      "output": "Syntax OK"
+    },
+    {
+      "name": "compliance",
+      "status": "PASS",
+      "elapsed_seconds": 0.301,
+      "artifact": "/Users/nevioniebel/Documents/Projekte/Freelancing/scratch/tent_cuenta_10/compliance/build",
+      "output": "Hinweis: ComplianceAuditor.java verwendet oder \u00fcberschreibt eine veraltete API.\nHinweis: Wiederholen Sie die Kompilierung mit -Xlint:deprecation, um Details zu erhalten."
+    },
+    {
+      "name": "market",
+      "status": "PASS",
+      "elapsed_seconds": 0.529,
+      "artifact": "/Users/nevioniebel/Documents/Projekte/Freelancing/scratch/tent_cuenta_10/market/market",
+      "output": ""
+    }
+  ],
+  "pr_note": "Include the encrypted diagnostic logd artifact(s): diagnostic/build-db991709-part001.logd, diagnostic/build-db991709-part002.logd. The encrypted .logd is the required diagnostic content for PR review; this JSON file is metadata. Maintainers may ask you to remove these diagnostic artifacts before merging."
+}
