@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""Multi-language build orchestrator and diagnostic generator for the Tent of Trials platform.
+
+Coordinates prerequisite verification, compiling, and artifact cleaning across polyglot submodules.
+Produces encrypted diagnostic bundles and JSON build validation reports for submission tracking.
+"""
 
 import argparse
 import datetime
