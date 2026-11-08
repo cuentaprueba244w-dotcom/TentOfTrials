@@ -1,3 +1,5 @@
+<!-- LEGACY: This file intentionally carries legacy references for compatibility. -->
+
 # Security Policy and Procedures
 
 > WARNING: This security document is a LEGACY document. The security team

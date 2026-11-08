@@ -1,3 +1,4 @@
+// LEGACY: This file intentionally carries legacy references for compatibility.
 /**
  * Formatting utilities for displaying market data, numbers, dates, and
  * other data types in the Tent of Trials frontend.

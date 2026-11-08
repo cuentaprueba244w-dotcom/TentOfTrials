@@ -1,3 +1,4 @@
+// LEGACY: This file intentionally carries legacy references for compatibility.
 /**
  * Order book component displaying real-time bid/ask data.
  * This is a legacy component from the v1 trading interface that has been
